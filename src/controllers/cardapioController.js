@@ -1,5 +1,6 @@
-const cardapioModel = require("../models/cardapioModel");
-const cache = require("../redis");
+/* eslint-disable no-console */
+const cardapioModel = require('../models/cardapioModel');
+const cache = require('../redis');
 
 module.exports = {
   async create(req, res) {
@@ -11,30 +12,30 @@ module.exports = {
       opcao,
       acompanhamento,
       guarnicao,
-      sobremesa
+      sobremesa,
     } = req.body;
 
     const cardapio = {
       data,
       tipo,
       entrada: {
-        descricao: entrada
+        descricao: entrada,
       },
       proteina: {
-        descricao: proteina
+        descricao: proteina,
       },
       opcao: {
-        descricao: opcao
+        descricao: opcao,
       },
       acompanhamento: {
-        descricao: acompanhamento
+        descricao: acompanhamento,
       },
       guarnicao: {
-        descricao: guarnicao
+        descricao: guarnicao,
       },
       sobremesa: {
-        descricao: sobremesa
-      }
+        descricao: sobremesa,
+      },
     };
 
     const result = await cardapioModel.create(cardapio);
@@ -52,7 +53,7 @@ module.exports = {
     const exists = await cache.get(`cardapio:${id}`);
 
     if (exists) {
-      console.log("cardapio no cache");
+      console.log('cardapio no cache');
       return res.json(JSON.parse(exists));
     }
 
@@ -79,14 +80,14 @@ module.exports = {
       { _id: id },
       {
         $addToSet: {
-          avaliacoes_geral: { $each: [{ user_id: user_id, nota: nota }] }
-        }
+          avaliacoes_geral: { $each: [{ user_id, nota }] },
+        },
       }
     );
 
-    //result.avaliacoes_geral.push(user);
+    // result.avaliacoes_geral.push(user);
 
-    //await result.save();
+    // await result.save();
 
     return res.json(result);
   },
@@ -122,36 +123,36 @@ module.exports = {
       opcao,
       acompanhamento,
       guarnicao,
-      sobremesa
+      sobremesa,
     } = req.body;
 
     const result = await cardapioModel.updateOne(
       { _id: id },
       {
         $set: {
-          tipo: tipo,
+          tipo,
           entrada: {
-            descricao: entrada
+            descricao: entrada,
           },
           proteina: {
-            descricao: proteina
+            descricao: proteina,
           },
           opcao: {
-            descricao: opcao
+            descricao: opcao,
           },
           acompanhamento: {
-            descricao: acompanhamento
+            descricao: acompanhamento,
           },
           guarnicao: {
-            descricao: guarnicao
+            descricao: guarnicao,
           },
           sobremesa: {
-            descricao: sobremesa
-          }
-        }
+            descricao: sobremesa,
+          },
+        },
       }
     );
 
     return res.json(result);
-  }
+  },
 };

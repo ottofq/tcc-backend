@@ -1,4 +1,4 @@
-const alunoModel = require("../models/alunoModel");
+const alunoModel = require('../models/alunoModel');
 
 module.exports = {
   async create(req, res) {
@@ -19,7 +19,7 @@ module.exports = {
           isVegano,
           ovolactovegetariano,
           vegetariano_restrito,
-          vegano
+          vegano,
         },
         adiciona_sal,
         adiciona_oleo,
@@ -33,7 +33,7 @@ module.exports = {
           dislipidemias,
           doenca_arterial_coronariana,
           diabetes,
-          outras
+          outras,
         },
         patologias_familia: {
           fam_doenca_cardiovascular,
@@ -42,9 +42,9 @@ module.exports = {
           fam_dislipidemias,
           fam_doenca_arterial_coronariana,
           fam_diabetes,
-          fam_outras
+          fam_outras,
         },
-        medicamento_continuo
+        medicamento_continuo,
       },
       avaliacao_RU: {
         aroma,
@@ -59,9 +59,9 @@ module.exports = {
           estrutura_fisica,
           tempo_fila,
           preco_ticket,
-          melhorias_outros
-        }
-      }
+          melhorias_outros,
+        },
+      },
     } = req.body;
 
     const aluno = {
@@ -81,7 +81,7 @@ module.exports = {
           isVegano,
           ovolactovegetariano,
           vegetariano_restrito,
-          vegano
+          vegano,
         },
         adiciona_sal,
         adiciona_oleo,
@@ -95,7 +95,7 @@ module.exports = {
           dislipidemias,
           doenca_arterial_coronariana,
           diabetes,
-          outras
+          outras,
         },
         patologias_familia: {
           fam_doenca_cardiovascular,
@@ -104,7 +104,7 @@ module.exports = {
           fam_dislipidemias,
           fam_doenca_arterial_coronariana,
           fam_diabetes,
-          fam_outras
+          fam_outras,
         },
         medicamento_continuo,
         avaliacao_RU: {
@@ -120,10 +120,10 @@ module.exports = {
             estrutura_fisica,
             tempo_fila,
             preco_ticket,
-            melhorias_outros
-          }
-        }
-      }
+            melhorias_outros,
+          },
+        },
+      },
     };
 
     try {
@@ -148,7 +148,7 @@ module.exports = {
       const result = await alunoModel.findById({ _id: id });
       return res.json(result);
     } catch (error) {
-      return res.status(400).json({ error: "Aluno não encontrado" });
+      return res.status(400).json({ error: 'Aluno não encontrado' });
     }
-  }
+  },
 };
