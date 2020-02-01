@@ -1,6 +1,7 @@
 const { Router } = require('express');
 const cardapio = require('./controllers/cardapioController');
 const aluno = require('./controllers/alunoController');
+const info = require('./controllers/informacaoController');
 
 const routes = Router();
 
@@ -16,5 +17,10 @@ routes.delete('/cardapio/:id', cardapio.delete);
 routes.post('/alunos', aluno.create);
 routes.get('/alunos', aluno.readAll);
 routes.get('/alunos/:id', aluno.readOne);
+
+routes.post('/informacoes', info.create);
+routes.get('/informacoes', info.read);
+routes.put('/informacoes/:id', info.update);
+routes.delete('/informacoes/:id', info.delete);
 
 module.exports = routes;

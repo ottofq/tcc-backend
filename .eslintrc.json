@@ -17,6 +17,6 @@
     "prettier/prettier": "error",
     "camelcase": "off",
     "no-console": "off",
-    "class-methods-use-this" "off"
+    "class-methods-use-this": "off"
   }
 }
