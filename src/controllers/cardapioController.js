@@ -43,7 +43,12 @@ class CardapioController {
   }
 
   async readAll(req, res) {
-    const result = await cardapioModel.find();
+    const { page } = req.params;
+    const skips = 10 * (page - 1);
+    const result = await cardapioModel
+      .find()
+      .skip(skips)
+      .limit(10);
 
     return res.json(result);
   }
@@ -59,8 +64,14 @@ class CardapioController {
     }
 
     try {
-      const result = await cardapioModel.findOne({ _id: id });
+      const result = await cardapioModel
+        .findOne({ _id: id })
+        .select(
+          'data tipo entrada proteina opcao acompanhamento guarnicao sobremesa'
+        );
+
       await cache.setex(`cardapio:${id}`, 28800, JSON.stringify(result));
+
       return res.json(result);
     } catch (error) {
       return res.status(400).json(error);
@@ -104,9 +115,9 @@ class CardapioController {
       return acumulado + item.nota;
     }, 0);
 
-    const media = notas / result.avaliacoes_geral.length;
-    console.log(`${notas} + ${result.avaliacoes_geral.length}`);
-    return res.json({ id, media });
+    const votos = result.avaliacoes_geral.length;
+    const media = notas / votos;
+    return res.json({ id, media, votos });
   }
 
   async comment(req, res) {
@@ -130,6 +141,7 @@ class CardapioController {
     const { id } = req.params;
 
     const result = await cardapioModel.deleteOne({ _id: id });
+    await cache.del(`cardapio:${id}`);
 
     return res.json(result);
   }
@@ -172,7 +184,7 @@ class CardapioController {
         },
       }
     );
-
+    await cache.del(`cardapio:${id}`);
     return res.json(result);
   }
 }
