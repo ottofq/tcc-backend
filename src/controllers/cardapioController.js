@@ -1,8 +1,7 @@
-/* eslint-disable no-console */
 const cardapioModel = require('../models/cardapioModel');
 const cache = require('../redis');
 
-module.exports = {
+class CardapioController {
   async create(req, res) {
     const data = Date.now();
     const {
@@ -41,12 +40,14 @@ module.exports = {
     const result = await cardapioModel.create(cardapio);
 
     return res.json(result);
-  },
+  }
+
   async readAll(req, res) {
     const result = await cardapioModel.find();
 
     return res.json(result);
-  },
+  }
+
   async readOne(req, res) {
     const { id } = req.params;
 
@@ -64,33 +65,50 @@ module.exports = {
     } catch (error) {
       return res.status(400).json(error);
     }
-  },
+  }
 
   async rate(req, res) {
     const { nota } = req.body;
     const { id } = req.params;
     const { user_id } = req.headers;
 
-    // const result = await cardapioModel.findById(id);
+    const user = await cardapioModel.findOne({
+      _id: id,
+      'avaliacoes_geral.user_id': user_id,
+    });
 
-    const user = { user_id, nota };
-    console.log(user);
+    if (user) {
+      const result = await cardapioModel.updateOne(
+        { _id: id, 'avaliacoes_geral.user_id': user_id },
+        { $set: { 'avaliacoes_geral.$.nota': nota } }
+      );
+      return res.json(result);
+    }
 
     const result = await cardapioModel.updateOne(
       { _id: id },
       {
-        $addToSet: {
-          avaliacoes_geral: { $each: [{ user_id, nota }] },
-        },
+        $push: { avaliacoes_geral: { user_id, nota } },
       }
     );
 
-    // result.avaliacoes_geral.push(user);
-
-    // await result.save();
-
     return res.json(result);
-  },
+  }
+
+  async average(req, res) {
+    const { id } = req.params;
+
+    const result = await cardapioModel.findById({ _id: id });
+
+    const notas = result.avaliacoes_geral.reduce((acumulado, item) => {
+      return acumulado + item.nota;
+    }, 0);
+
+    const media = notas / result.avaliacoes_geral.length;
+    console.log(`${notas} + ${result.avaliacoes_geral.length}`);
+    return res.json({ id, media });
+  }
+
   async comment(req, res) {
     const { comentario } = req.body;
     const { id } = req.params;
@@ -106,14 +124,16 @@ module.exports = {
     } catch (error) {
       return res.status(400).json({ error });
     }
-  },
+  }
+
   async delete(req, res) {
     const { id } = req.params;
 
     const result = await cardapioModel.deleteOne({ _id: id });
 
     return res.json(result);
-  },
+  }
+
   async update(req, res) {
     const { id } = req.params;
     const {
@@ -154,5 +174,6 @@ module.exports = {
     );
 
     return res.json(result);
-  },
-};
+  }
+}
+module.exports = new CardapioController();

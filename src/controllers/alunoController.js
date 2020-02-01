@@ -1,6 +1,6 @@
 const alunoModel = require('../models/alunoModel');
 
-module.exports = {
+class AlunoController {
   async create(req, res) {
     const {
       nome,
@@ -132,7 +132,8 @@ module.exports = {
     } catch (error) {
       return res.status(400).json(error);
     }
-  },
+  }
+
   async readAll(req, res) {
     try {
       const result = await alunoModel.find();
@@ -140,7 +141,8 @@ module.exports = {
     } catch (error) {
       return res.status(400).json(error);
     }
-  },
+  }
+
   async readOne(req, res) {
     const { id } = req.params;
 
@@ -150,5 +152,6 @@ module.exports = {
     } catch (error) {
       return res.status(400).json({ error: 'Aluno não encontrado' });
     }
-  },
-};
+  }
+}
+module.exports = new AlunoController();

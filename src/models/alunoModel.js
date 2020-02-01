@@ -1,85 +1,85 @@
-const { Schema, model } = require("mongoose");
+const { Schema, model } = require('mongoose');
 
 const alunoSchema = new Schema({
   nome: {
     type: String,
-    required: true
+    required: true,
   },
   matricula: {
     type: Number,
     required: true,
-    unique: true
+    unique: true,
   },
   data_nascimento: {
     type: String,
-    required: true
+    required: true,
   },
   ano_ingresso: {
     type: Number,
-    required: true
+    required: true,
   },
   sexo: {
     type: String,
-    required: true
+    required: true,
   },
   bolsa: {
     bolsista: {
       type: Boolean,
-      required: true
+      required: true,
     },
     tipo: {
-      type: String
-    }
+      type: String,
+    },
   },
   questionario: {
     frequencia_RU: {
       type: String,
-      required: true
+      required: true,
     },
     refeicao_RU: {
       type: String,
-      required: true
+      required: true,
     },
     nivel_fisico: {
       type: String,
-      required: true
+      required: true,
     },
     peso_ideal: {
       type: String,
-      required: true
+      required: true,
     },
     alergias: {
       nenhuma: Boolean,
       gluten: Boolean,
       lactose: Boolean,
       proteina_leite: Boolean,
-      outros: String
+      outros: String,
     },
     vegetariano: {
       isVegano: Boolean,
       ovolactovegetariano: Boolean,
       vegetariano_restrito: Boolean,
-      vegano: Boolean
+      vegano: Boolean,
     },
     adiciona_sal: {
       type: Boolean,
-      required: true
+      required: true,
     },
     adiciona_oleo: {
       type: Boolean,
-      required: true
+      required: true,
     },
     consome_alcool: {
       type: Boolean,
-      required: true
+      required: true,
     },
     frequencia_alcool: {
       type: String,
-      required: true
+      required: true,
     },
     tabagista: {
       type: Boolean,
-      required: true
+      required: true,
     },
     patologias: {
       doenca_cardiovascular: Boolean,
@@ -88,7 +88,7 @@ const alunoSchema = new Schema({
       dislipidemias: Boolean,
       doenca_arterial_coronariana: Boolean,
       diabetes: Boolean,
-      outras: String
+      outras: String,
     },
     patologias_familia: {
       fam_doenca_cardiovascular: Boolean,
@@ -97,11 +97,11 @@ const alunoSchema = new Schema({
       fam_dislipidemias: Boolean,
       fam_doenca_arterial_coronariana: Boolean,
       fam_diabetes: Boolean,
-      fam_outras: String
+      fam_outras: String,
     },
     medicamento_continuo: {
-      type: String
-    }
+      type: String,
+    },
   },
   avaliacao_RU: {
     aroma: Number,
@@ -116,9 +116,9 @@ const alunoSchema = new Schema({
       estrutura_fisica: Boolean,
       tempo_fila: Boolean,
       preco_ticket: Boolean,
-      melhorias_outros: String
-    }
-  }
+      melhorias_outros: String,
+    },
+  },
 });
 
-module.exports = model("Aluno", alunoSchema);
+module.exports = model('Aluno', alunoSchema);

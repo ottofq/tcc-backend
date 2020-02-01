@@ -1,99 +1,105 @@
-const { Schema, model } = require("mongoose");
+const { Schema, model } = require('mongoose');
 
 const userSchema = new Schema(
   {
     user_id: { type: String },
     nota: { type: Number },
-    comentario: { type: String }
+    comentario: { type: String },
   },
   { _id: false }
 );
 
 const cardapioSchema = new Schema({
   data: {
-    type: Date
+    type: Date,
+    required: true,
   },
   tipo: {
-    type: String
+    type: String,
+    required: true,
   },
   entrada: {
     descricao: {
       type: String,
-      required: true
+      required: true,
     },
     avaliacao: {
-      type: [Number]
+      type: [Number],
     },
     comentarios: {
-      type: [String]
-    }
+      type: [String],
+    },
   },
   proteina: {
     descricao: {
       type: String,
-      required: true
+      required: true,
     },
     avaliacao: {
-      type: [Number]
+      type: [Number],
     },
     comentarios: {
-      type: [String]
-    }
+      type: [String],
+    },
   },
   opcao: {
     descricao: {
       type: String,
-      required: true
+      required: true,
     },
     avaliacao: {
-      type: [Number]
+      type: [Number],
     },
     comentarios: {
-      type: [String]
-    }
+      type: [String],
+    },
   },
   acompanhamento: {
     descricao: {
       type: String,
-      required: true
+      required: true,
     },
     avaliacao: {
-      type: [Number]
+      type: [Number],
     },
     comentarios: {
-      type: [String]
-    }
+      type: [String],
+    },
   },
   guarnicao: {
     descricao: {
       type: String,
-      required: true
+      required: true,
     },
     avaliacao: {
-      type: [Number]
+      type: [Number],
     },
     comentarios: {
-      type: [String]
-    }
+      type: [String],
+    },
   },
   sobremesa: {
     descricao: {
       type: String,
-      required: true
+      required: true,
     },
     avaliacao: {
-      type: [Number]
+      type: [Number],
     },
     comentarios: {
-      type: [String]
-    }
+      type: [String],
+    },
   },
   avaliacoes_geral: {
-    type: [userSchema]
+    type: [userSchema],
+  },
+  media_geral: {
+    type: Number,
+    default: 0,
   },
   comentarios_geral: {
-    type: [userSchema]
-  }
+    type: [userSchema],
+  },
 });
 
-module.exports = model("Cardapio", cardapioSchema);
+module.exports = model('Cardapio', cardapioSchema);
