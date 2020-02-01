@@ -2,6 +2,7 @@ const { Router } = require('express');
 const cardapio = require('./controllers/cardapioController');
 const aluno = require('./controllers/alunoController');
 const info = require('./controllers/informacaoController');
+const user = require('./controllers/userController');
 
 const routes = Router();
 
@@ -22,5 +23,10 @@ routes.post('/informacoes', info.create);
 routes.get('/informacoes', info.read);
 routes.put('/informacoes/:id', info.update);
 routes.delete('/informacoes/:id', info.delete);
+
+routes.post('/users', user.create);
+routes.get('/users', user.read);
+routes.put('/users/:id', user.update);
+routes.delete('/users/:id', user.delete);
 
 module.exports = routes;
