@@ -43,7 +43,7 @@ class CardapioController {
   }
 
   async readAll(req, res) {
-    const { page } = req.params;
+    const { page } = req.query;
     const skips = 10 * (page - 1);
     const result = await cardapioModel
       .find()
