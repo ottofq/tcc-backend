@@ -9,6 +9,7 @@ const auth = require('./auth.routes');
 const routes = Router();
 
 routes.get('/cardapio', cardapio.readAll);
+routes.get('/cardapio/last', cardapio.readLast);
 routes.get('/cardapio/:id', cardapio.readOne);
 routes.get('/cardapio/avg/:id', cardapio.average);
 routes.post('/cardapio', auth, cardapio.create);

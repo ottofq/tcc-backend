@@ -1,14 +1,5 @@
 const { Schema, model } = require('mongoose');
 
-const userSchema = new Schema(
-  {
-    user_id: { type: String },
-    nota: { type: Number },
-    comentario: { type: String },
-  },
-  { _id: false }
-);
-
 const cardapioSchema = new Schema({
   data: {
     type: Date,
@@ -90,15 +81,9 @@ const cardapioSchema = new Schema({
       type: [String],
     },
   },
-  avaliacoes_geral: {
-    type: [userSchema],
-  },
   media_geral: {
     type: Number,
     default: 0,
-  },
-  comentarios_geral: {
-    type: [userSchema],
   },
 });
 
