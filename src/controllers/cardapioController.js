@@ -76,11 +76,7 @@ class CardapioController {
     }
 
     try {
-      const result = await cardapioModel
-        .findOne({ _id: id })
-        .select(
-          'data tipo entrada proteina opcao acompanhamento guarnicao sobremesa'
-        );
+      const result = await cardapioModel.findOne({ _id: id });
 
       await cache.setex(`cardapio:${id}`, 28800, JSON.stringify(result));
 
@@ -121,13 +117,13 @@ class CardapioController {
   async average(req, res) {
     const { id } = req.params;
 
-    const result = await cardapioModel.findById({ _id: id });
+    const result = await avaliacaoModel.findOne({ cardapio: id });
 
-    const notas = result.avaliacoes_geral.reduce((acumulado, item) => {
+    const notas = result.avaliacoes.reduce((acumulado, item) => {
       return acumulado + item.nota;
     }, 0);
 
-    const votos = result.avaliacoes_geral.length;
+    const votos = result.avaliacoes.length;
     const media = notas / votos;
     return res.json({ id, media, votos });
   }
@@ -200,6 +196,14 @@ class CardapioController {
       }
     );
     await cache.del(`cardapio:${id}`);
+    return res.json(result);
+  }
+
+  async readComments(req, res) {
+    const { id } = req.params;
+
+    const result = await comentarioModel.findOne({ cardapio: id });
+
     return res.json(result);
   }
 }
