@@ -60,7 +60,8 @@ class CardapioController {
     const result = await cardapioModel
       .find()
       .skip(skips)
-      .limit(10);
+      .limit(10)
+      .sort({ _id: -1 });
 
     return res.json(result);
   }
@@ -125,6 +126,16 @@ class CardapioController {
 
     const votos = result.avaliacoes.length;
     const media = notas / votos;
+
+    if (media > 0) {
+      cardapioModel.updateOne(
+        { _id: id },
+        {
+          $set: { media_geral: media },
+        }
+      );
+    }
+
     return res.json({ id, media, votos });
   }
 
@@ -139,7 +150,7 @@ class CardapioController {
       const result = await comentarioModel.updateOne(
         { cardapio: id },
         {
-          $push: { comentarios: comment },
+          $push: { comentarios: { $each: [comment], $position: 0 } },
         }
       );
       return res.json(result);
