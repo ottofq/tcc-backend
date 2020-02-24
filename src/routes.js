@@ -24,7 +24,8 @@ routes.get('/alunos', auth, aluno.readAll);
 routes.get('/alunos/:id', auth, aluno.readOne);
 
 routes.post('/informacoes', auth, info.create);
-routes.get('/informacoes', info.read);
+routes.get('/informacoes', info.readAll);
+routes.get('/informacoes/:id', info.readOne);
 routes.put('/informacoes/:id', auth, info.update);
 routes.delete('/informacoes/:id', auth, info.delete);
 

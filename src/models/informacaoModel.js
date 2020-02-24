@@ -5,6 +5,10 @@ const infoSchema = new Schema({
     type: Date,
     default: Date.now,
   },
+  titulo: {
+    type: String,
+    required: true,
+  },
   descricao: {
     type: String,
     required: true,

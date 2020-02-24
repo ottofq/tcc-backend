@@ -2,23 +2,39 @@ const infoModel = require('../models/informacaoModel');
 
 class InfoController {
   async create(req, res) {
-    const { descricao } = req.body;
+    const { titulo, descricao } = req.body;
 
     try {
-      const result = await infoModel.create({ descricao });
+      const result = await infoModel.create({ titulo, descricao });
       return res.json(result);
     } catch (error) {
       return res.status(400).json(error);
     }
   }
 
-  async read(req, res) {
+  async readAll(req, res) {
+    const { page } = req.query;
+    const skips = 10 * (page - 1);
+
     try {
       const result = await infoModel
         .find()
-        .sort({ _id: -1 })
-        .limit(10);
+        .skip(skips)
+        .limit(10)
+        .sort({ _id: -1 });
       return res.json(result);
+    } catch (error) {
+      return res.status(400).json(error);
+    }
+  }
+
+  async readOne(req, res) {
+    const { id } = req.params;
+
+    try {
+      const result = await infoModel.findById(id);
+
+      return res.status(200).json(result);
     } catch (error) {
       return res.status(400).json(error);
     }
@@ -26,12 +42,13 @@ class InfoController {
 
   async update(req, res) {
     const { id } = req.params;
-    const { descricao } = req.body;
+    const { titulo, descricao } = req.body;
 
     try {
       const result = await infoModel.updateOne(
         { _id: id },
         {
+          titulo,
           descricao,
         }
       );
