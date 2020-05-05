@@ -14,110 +14,102 @@ const alunoSchema = new Schema({
     type: String,
     required: true,
   },
+  curso: {
+    type: String,
+    required: true,
+  },
   ano_ingresso: {
-    type: Number,
+    type: String,
     required: true,
   },
   sexo: {
     type: String,
     required: true,
   },
-  bolsa: {
-    bolsista: {
-      type: Boolean,
-      required: true,
-    },
-    tipo: {
-      type: String,
-    },
+  bolsista: {
+    type: String,
+    required: true,
   },
-  questionario: {
-    frequencia_RU: {
-      type: String,
-      required: true,
-    },
-    refeicao_RU: {
-      type: String,
-      required: true,
-    },
-    nivel_fisico: {
-      type: String,
-      required: true,
-    },
-    peso_ideal: {
-      type: String,
-      required: true,
-    },
-    alergias: {
-      nenhuma: Boolean,
-      gluten: Boolean,
-      lactose: Boolean,
-      proteina_leite: Boolean,
-      outros: String,
-    },
-    vegetariano: {
-      isVegano: Boolean,
-      ovolactovegetariano: Boolean,
-      vegetariano_restrito: Boolean,
-      vegano: Boolean,
-    },
-    adiciona_sal: {
-      type: Boolean,
-      required: true,
-    },
-    adiciona_oleo: {
-      type: Boolean,
-      required: true,
-    },
-    consome_alcool: {
-      type: Boolean,
-      required: true,
-    },
-    frequencia_alcool: {
-      type: String,
-      required: true,
-    },
-    tabagista: {
-      type: Boolean,
-      required: true,
-    },
-    patologias: {
-      doenca_cardiovascular: Boolean,
-      hipertensao: Boolean,
-      obesidade: Boolean,
-      dislipidemias: Boolean,
-      doenca_arterial_coronariana: Boolean,
-      diabetes: Boolean,
-      outras: String,
-    },
-    patologias_familia: {
-      fam_doenca_cardiovascular: Boolean,
-      fam_hipertensao: Boolean,
-      fam_obesidade: Boolean,
-      fam_dislipidemias: Boolean,
-      fam_doenca_arterial_coronariana: Boolean,
-      fam_diabetes: Boolean,
-      fam_outras: String,
-    },
-    medicamento_continuo: {
-      type: String,
-    },
+
+  frequencia_RU: {
+    type: String,
+    required: true,
+  },
+  tipo_refeicao_RU: {
+    type: String,
+    required: true,
+  },
+  nivel_fisico: {
+    type: String,
+    required: true,
+  },
+  peso_ideal: {
+    type: Boolean,
+    required: true,
+  },
+  alergias: {
+    nenhuma: Boolean,
+    alergia_gluten: Boolean,
+    intolerancia_lactose: Boolean,
+    proteina_leite_vaca: Boolean,
+    outras_alergias: String,
+  },
+  vegano_vegetariano: {
+    type: String,
+    required: true,
+  },
+  adiciona_sal: {
+    type: Boolean,
+    required: true,
+  },
+  utiliza_oleo_composto: {
+    type: Boolean,
+    required: true,
+  },
+  consome_bebida_alcoolica: {
+    type: String,
+    required: true,
+  },
+  tabagista: {
+    type: Boolean,
+    required: true,
+  },
+  patologias: {
+    doenca_cardiovascular: Boolean,
+    hipertensao_arterial: Boolean,
+    obesidade: Boolean,
+    dislipidemias: Boolean,
+    diabetes: Boolean,
+    doenca_arterial_coronariana: Boolean,
+    outras_patologias: String,
+  },
+  patologias_familia: {
+    fam_doenca_cardiovascular: Boolean,
+    fam_hipertensao: Boolean,
+    fam_obesidade: Boolean,
+    fam_dislipidemias: Boolean,
+    fam_doenca_arterial_coronariana: Boolean,
+    fam_diabetes: Boolean,
+    patologias_familia_outras: String,
+  },
+  medicamento_continuo: {
+    type: String,
   },
   avaliacao_RU: {
-    aroma: Number,
-    coloracao_cardapio: Number,
-    textura_preparacao: Number,
-    sabor_preparacao: Number,
-    avaliacao_geral: Number,
-    melhorias: {
-      cardapio: Boolean,
-      melhorias_sabor_preparacao: Boolean,
-      opcao_vegetariana: Boolean,
-      estrutura_fisica: Boolean,
-      tempo_fila: Boolean,
-      preco_ticket: Boolean,
-      melhorias_outros: String,
-    },
+    aroma: String,
+    coloracao_cardapio: String,
+    textura_preparacao: String,
+    sabor_preparacao: String,
+    avaliacao_geral: String,
+  },
+  melhorias_RU: {
+    cardapio: Boolean,
+    melhoria_sabor_preparacao: Boolean,
+    opcao_vegetariana: Boolean,
+    estrutura_fisica: Boolean,
+    tempo_fila: Boolean,
+    preco_ticket: Boolean,
+    melhoria_outros: String,
   },
 });
 
