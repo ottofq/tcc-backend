@@ -153,5 +153,483 @@ class AlunoController {
       return res.status(400).json({ error: 'Aluno não encontrado' });
     }
   }
+
+  async porcetagemAlergia(req, res) {
+    try {
+      const total_alunos = await alunoModel.countDocuments();
+      const result = await alunoModel.aggregate([
+        {
+          $facet: {
+            nenhuma: [
+              { $match: { 'alergias.nenhuma': { $eq: true } } },
+              { $count: 'nenhuma' },
+            ],
+            alergia_gluten: [
+              { $match: { 'alergias.alergia_gluten': { $eq: true } } },
+              { $count: 'alergia_gluten' },
+            ],
+            intolerancia_lactose: [
+              { $match: { 'alergias.intolerancia_lactose': { $eq: true } } },
+              { $count: 'intolerancia_lactose' },
+            ],
+            proteina_leite_vaca: [
+              { $match: { 'alergias.proteina_leite_vaca': { $eq: true } } },
+              { $count: 'proteina_leite_vaca' },
+            ],
+            outras_alergias: [
+              { $match: { 'alergias.outras_alergias': { $ne: null } } },
+              { $count: 'outras_alergias' },
+            ],
+          },
+        },
+
+        {
+          $project: {
+            nenhuma_alergia: {
+              $multiply: [
+                { $arrayElemAt: ['$nenhuma.nenhuma', 0] },
+                100 / total_alunos,
+              ],
+            },
+            alergia_gluten: {
+              $multiply: [
+                { $arrayElemAt: ['$alergia_gluten.alergia_gluten', 0] },
+                100 / total_alunos,
+              ],
+            },
+            intolerancia_lactose: {
+              $multiply: [
+                {
+                  $arrayElemAt: [
+                    '$intolerancia_lactose.intolerancia_lactose',
+                    0,
+                  ],
+                },
+                100 / total_alunos,
+              ],
+            },
+            proteina_leite_vaca: {
+              $multiply: [
+                {
+                  $arrayElemAt: ['$proteina_leite_vaca.proteina_leite_vaca', 0],
+                },
+                100 / total_alunos,
+              ],
+            },
+            outras_alergias: {
+              $multiply: [
+                {
+                  $arrayElemAt: ['$outras_alergias.outras_alergias', 0],
+                },
+                100 / total_alunos,
+              ],
+            },
+          },
+        },
+      ]);
+      return res.json({ total_alunos, porcentagem: result[0] });
+    } catch (error) {
+      return res.status(400).json({ error });
+    }
+  }
+
+  async countAlergias(req, res) {
+    try {
+      const total_alunos = await alunoModel.countDocuments();
+      const result = await alunoModel.aggregate([
+        {
+          $facet: {
+            nenhuma: [
+              { $match: { 'alergias.nenhuma': { $eq: true } } },
+              { $count: 'nenhuma' },
+            ],
+            alergia_gluten: [
+              { $match: { 'alergias.alergia_gluten': { $eq: true } } },
+              { $count: 'alergia_gluten' },
+            ],
+            intolerancia_lactose: [
+              { $match: { 'alergias.intolerancia_lactose': { $eq: true } } },
+              { $count: 'intolerancia_lactose' },
+            ],
+            proteina_leite_vaca: [
+              { $match: { 'alergias.proteina_leite_vaca': { $eq: true } } },
+              { $count: 'proteina_leite_vaca' },
+            ],
+            outras_alergias: [
+              { $match: { 'alergias.outras_alergias': { $exists: 1 } } },
+              { $count: 'outras_alergias' },
+            ],
+          },
+        },
+        {
+          $project: {
+            nenhuma_alergia: {
+              $multiply: { $arrayElemAt: ['$nenhuma.nenhuma', 0] },
+            },
+            alergia_gluten: {
+              $multiply: {
+                $arrayElemAt: ['$alergia_gluten.alergia_gluten', 0],
+              },
+            },
+            intolerancia_lactose: {
+              $arrayElemAt: ['$intolerancia_lactose.intolerancia_lactose', 0],
+            },
+            proteina_leite_vaca: {
+              $arrayElemAt: ['$proteina_leite_vaca.proteina_leite_vaca', 0],
+            },
+            outras_alergias: {
+              $arrayElemAt: ['$outras_alergias.outras_alergias', 0],
+            },
+          },
+        },
+      ]);
+      return res.json({ total_alunos, totais: result[0] });
+    } catch (error) {
+      return res.status(400).json({ error });
+    }
+  }
+
+  async countPatologias(req, res) {
+    try {
+      const total_alunos = await alunoModel.countDocuments();
+      const result = await alunoModel.aggregate([
+        {
+          $facet: {
+            doenca_cardiovascular: [
+              { $match: { 'patologias.doenca_cardiovascular': { $eq: true } } },
+              { $count: 'doenca_cardiovascular' },
+            ],
+            hipertensao_arterial: [
+              { $match: { 'patologias.hipertensao_arterial': { $eq: true } } },
+              { $count: 'hipertensao_arterial' },
+            ],
+            obesidade: [
+              { $match: { 'patologias.obesidade': { $eq: true } } },
+              { $count: 'obesidade' },
+            ],
+            dislipidemias: [
+              { $match: { 'patologias.dislipidemias': { $eq: true } } },
+              { $count: 'dislipidemias' },
+            ],
+            doenca_arterial_coronariana: [
+              {
+                $match: {
+                  'patologias.doenca_arterial_coronariana': { $eq: true },
+                },
+              },
+              { $count: 'doenca_arterial_coronariana' },
+            ],
+            diabetes: [
+              {
+                $match: {
+                  'patologias.diabetes': { $eq: true },
+                },
+              },
+              { $count: 'diabetes' },
+            ],
+            outras_patologias: [
+              {
+                $match: {
+                  'patologias.outras_patologias': { $exists: 1 },
+                },
+              },
+              { $count: 'outras_patologias' },
+            ],
+          },
+        },
+        {
+          $project: {
+            doenca_cardiovascular: {
+              $arrayElemAt: ['$doenca_cardiovascular.doenca_cardiovascular', 0],
+            },
+            hipertensao_arterial: {
+              $arrayElemAt: ['$hipertensao_arterial.hipertensao_arterial', 0],
+            },
+            obesidade: {
+              $arrayElemAt: ['$obesidade.obesidade', 0],
+            },
+            dislipidemias: {
+              $arrayElemAt: ['$dislipidemias.dislipidemias', 0],
+            },
+            doenca_arterial_coronariana: {
+              $arrayElemAt: [
+                '$doenca_arterial_coronariana.doenca_arterial_coronariana',
+                0,
+              ],
+            },
+            diabetes: {
+              $arrayElemAt: ['$diabetes.diabetes', 0],
+            },
+            outras_patologias: {
+              $arrayElemAt: ['$outras_patologias.outras_patologias', 0],
+            },
+          },
+        },
+      ]);
+      return res.json({ total_alunos, totais: result[0] });
+    } catch (error) {
+      return res.status(400).json({ error });
+    }
+  }
+
+  async porcetagemPatologia(req, res) {
+    try {
+      const total_alunos = await alunoModel.countDocuments();
+      const result = await alunoModel.aggregate([
+        {
+          $facet: {
+            doenca_cardiovascular: [
+              { $match: { 'patologias.doenca_cardiovascular': { $eq: true } } },
+              { $count: 'doenca_cardiovascular' },
+            ],
+            hipertensao_arterial: [
+              { $match: { 'patologias.hipertensao_arterial': { $eq: true } } },
+              { $count: 'hipertensao_arterial' },
+            ],
+            obesidade: [
+              { $match: { 'patologias.obesidade': { $eq: true } } },
+              { $count: 'obesidade' },
+            ],
+            dislipidemias: [
+              { $match: { 'patologias.dislipidemias': { $eq: true } } },
+              { $count: 'dislipidemias' },
+            ],
+            doenca_arterial_coronariana: [
+              {
+                $match: {
+                  'patologias.doenca_arterial_coronariana': { $eq: true },
+                },
+              },
+              { $count: 'doenca_arterial_coronariana' },
+            ],
+            diabetes: [
+              {
+                $match: {
+                  'patologias.diabetes': { $eq: true },
+                },
+              },
+              { $count: 'diabetes' },
+            ],
+            outras_patologias: [
+              {
+                $match: {
+                  'patologias.outras_patologias': { $exists: 1 },
+                },
+              },
+              { $count: 'outras_patologias' },
+            ],
+          },
+        },
+        {
+          $project: {
+            doenca_cardiovascular: {
+              $multiply: [
+                {
+                  $arrayElemAt: [
+                    '$doenca_cardiovascular.doenca_cardiovascular',
+                    0,
+                  ],
+                },
+                100 / total_alunos,
+              ],
+            },
+            hipertensao_arterial: {
+              $multiply: [
+                {
+                  $arrayElemAt: [
+                    '$hipertensao_arterial.hipertensao_arterial',
+                    0,
+                  ],
+                },
+                100 / total_alunos,
+              ],
+            },
+            obesidade: {
+              $multiply: [
+                {
+                  $arrayElemAt: ['$obesidade.obesidade', 0],
+                },
+                100 / total_alunos,
+              ],
+            },
+            dislipidemias: {
+              $multiply: [
+                {
+                  $arrayElemAt: ['$dislipidemias.dislipidemias', 0],
+                },
+                100 / total_alunos,
+              ],
+            },
+            doenca_arterial_coronariana: {
+              $multiply: [
+                {
+                  $arrayElemAt: [
+                    '$doenca_arterial_coronariana.doenca_arterial_coronariana',
+                    0,
+                  ],
+                },
+                100 / total_alunos,
+              ],
+            },
+            diabetes: {
+              $multiply: [
+                {
+                  $arrayElemAt: ['$diabetes.diabetes', 0],
+                },
+                100 / total_alunos,
+              ],
+            },
+            outras_patologias: {
+              $multiply: [
+                {
+                  $arrayElemAt: ['$outras_patologias.outras_patologias', 0],
+                },
+                100 / total_alunos,
+              ],
+            },
+          },
+        },
+      ]);
+      return res.json({ total_alunos, porcentagem: result[0] });
+    } catch (error) {
+      return res.status(400).json({ error });
+    }
+  }
+
+  async porcentagemBolsista(req, res) {
+    try {
+      const total_alunos = await alunoModel.countDocuments();
+      const result = await alunoModel.aggregate([
+        {
+          $facet: {
+            bolsa_integral: [
+              { $match: { bolsista: { $eq: 'Bolsa integral' } } },
+              { $count: 'bolsa_integral' },
+            ],
+            bolsa_parcial: [
+              { $match: { bolsista: { $eq: 'Bolsa parcial' } } },
+              { $count: 'bolsa_parcial' },
+            ],
+            nao_bolsista: [
+              {
+                $match: { bolsista: { $eq: 'Não sou bolsista' } },
+              },
+              { $count: 'nao_bolsista' },
+            ],
+          },
+        },
+        {
+          $project: {
+            bolsa_integral: {
+              $multiply: [
+                {
+                  $arrayElemAt: ['$bolsa_integral.bolsa_integral', 0],
+                },
+                100 / total_alunos,
+              ],
+            },
+            bolsa_parcial: {
+              $multiply: [
+                {
+                  $arrayElemAt: ['$bolsa_parcial.bolsa_parcial', 0],
+                },
+                100 / total_alunos,
+              ],
+            },
+            nao_bolsista: {
+              $multiply: [
+                {
+                  $arrayElemAt: ['$nao_bolsista.nao_bolsista', 0],
+                },
+                100 / total_alunos,
+              ],
+            },
+          },
+        },
+      ]);
+      return res.json({ total_alunos, porcentagem: result[0] });
+    } catch (error) {
+      return res.status(400).json({ error });
+    }
+  }
+
+  async porcentagemFrequenciaRU(req, res) {
+    try {
+      const total_alunos = await alunoModel.countDocuments();
+      const result = await alunoModel.aggregate([
+        {
+          $facet: {
+            todo_dia: [
+              { $match: { frequencia_RU: { $eq: 'Todos os dias' } } },
+              { $count: 'todo_dia' },
+            ],
+            semana_3vezes: [
+              {
+                $match: {
+                  frequencia_RU: { $eq: 'Pelo menos 3 vezes na semana' },
+                },
+              },
+              { $count: 'semana_3vezes' },
+            ],
+            semana_1vez: [
+              {
+                $match: {
+                  frequencia_RU: { $eq: 'Pelo menos 1 vez na semana' },
+                },
+              },
+              { $count: 'semana_1vez' },
+            ],
+            raramente: [
+              {
+                $match: {
+                  frequencia_RU: { $eq: 'Raramente' },
+                },
+              },
+              { $count: 'raramente' },
+            ],
+          },
+        },
+        {
+          $project: {
+            todo_dia: {
+              $multiply: [
+                {
+                  $arrayElemAt: ['$todo_dia.todo_dia', 0],
+                },
+                100 / total_alunos,
+              ],
+            },
+            semana_3vezes: {
+              $multiply: [
+                {
+                  $arrayElemAt: ['$semana_3vezes.semana_3vezes', 0],
+                },
+                100 / total_alunos,
+              ],
+            },
+            semana_1vez: {
+              $multiply: [
+                {
+                  $arrayElemAt: ['$semana_1vez.semana_1vez', 0],
+                },
+                100 / total_alunos,
+              ],
+            },
+            raramente: {
+              $multiply: [
+                {
+                  $arrayElemAt: ['$raramente.raramente', 0],
+                },
+                100 / total_alunos,
+              ],
+            },
+          },
+        },
+      ]);
+      return res.json({ total_alunos, porcentagem: result[0] });
+    } catch (error) {
+      return res.status(400).json({ error });
+    }
+  }
 }
 module.exports = new AlunoController();
