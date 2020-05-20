@@ -631,5 +631,68 @@ class AlunoController {
       return res.status(400).json({ error });
     }
   }
+
+  async porcentagemTipoRefeicaoRU(req, res) {
+    try {
+      const total_alunos = await alunoModel.countDocuments();
+      const result = await alunoModel.aggregate([
+        {
+          $facet: {
+            almoco: [
+              { $match: { tipo_refeicao_RU: { $eq: 'Almoço' } } },
+              { $count: 'almoco' },
+            ],
+            jantar: [
+              {
+                $match: {
+                  tipo_refeicao_RU: { $eq: 'Jantar' },
+                },
+              },
+              { $count: 'jantar' },
+            ],
+            almoco_jantar: [
+              {
+                $match: {
+                  tipo_refeicao_RU: { $eq: 'Almoço e Jantar' },
+                },
+              },
+              { $count: 'almoco_jantar' },
+            ],
+          },
+        },
+        {
+          $project: {
+            almoco: {
+              $multiply: [
+                {
+                  $arrayElemAt: ['$almoco.almoco', 0],
+                },
+                100 / total_alunos,
+              ],
+            },
+            jantar: {
+              $multiply: [
+                {
+                  $arrayElemAt: ['$jantar.jantar', 0],
+                },
+                100 / total_alunos,
+              ],
+            },
+            almoco_jantar: {
+              $multiply: [
+                {
+                  $arrayElemAt: ['$almoco_jantar.almoco_jantar', 0],
+                },
+                100 / total_alunos,
+              ],
+            },
+          },
+        },
+      ]);
+      return res.json({ total_alunos, porcentagem: result[0] });
+    } catch (error) {
+      return res.status(400).json({ error });
+    }
+  }
 }
 module.exports = new AlunoController();
