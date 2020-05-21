@@ -26,6 +26,11 @@ routes.get('/alunos/patologias', auth, aluno.countPatologias);
 routes.get('/alunos/bolsistas', auth, aluno.porcentagemBolsista);
 routes.get('/alunos/frequencia', auth, aluno.porcentagemFrequenciaRU);
 routes.get('/alunos/tiporefeicao', auth, aluno.porcentagemTipoRefeicaoRU);
+routes.get(
+  '/alunos/nivelatividadefisica',
+  auth,
+  aluno.porcentagemNivelAtividadeFisica
+);
 routes.get('/alunos/:id', auth, aluno.readOne);
 
 routes.post('/informacoes', auth, info.create);

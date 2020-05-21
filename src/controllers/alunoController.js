@@ -694,5 +694,84 @@ class AlunoController {
       return res.status(400).json({ error });
     }
   }
+
+  async porcentagemNivelAtividadeFisica(req, res) {
+    try {
+      const total_alunos = await alunoModel.countDocuments();
+      const result = await alunoModel.aggregate([
+        {
+          $facet: {
+            sedentario: [
+              { $match: { nivel_fisico: { $eq: 'Sedentário' } } },
+              { $count: 'sedentario' },
+            ],
+            leve: [
+              {
+                $match: {
+                  nivel_fisico: { $eq: 'Leve' },
+                },
+              },
+              { $count: 'leve' },
+            ],
+            moderado: [
+              {
+                $match: {
+                  nivel_fisico: { $eq: 'Moderado' },
+                },
+              },
+              { $count: 'moderado' },
+            ],
+            ativo: [
+              {
+                $match: {
+                  nivel_fisico: { $eq: 'Ativo' },
+                },
+              },
+              { $count: 'ativo' },
+            ],
+          },
+        },
+        {
+          $project: {
+            sedentario: {
+              $multiply: [
+                {
+                  $arrayElemAt: ['$sedentario.sedentario', 0],
+                },
+                100 / total_alunos,
+              ],
+            },
+            leve: {
+              $multiply: [
+                {
+                  $arrayElemAt: ['$leve.leve', 0],
+                },
+                100 / total_alunos,
+              ],
+            },
+            moderado: {
+              $multiply: [
+                {
+                  $arrayElemAt: ['$moderado.moderado', 0],
+                },
+                100 / total_alunos,
+              ],
+            },
+            ativo: {
+              $multiply: [
+                {
+                  $arrayElemAt: ['$ativo.ativo', 0],
+                },
+                100 / total_alunos,
+              ],
+            },
+          },
+        },
+      ]);
+      return res.json({ total_alunos, porcentagem: result[0] });
+    } catch (error) {
+      return res.status(400).json({ error });
+    }
+  }
 }
 module.exports = new AlunoController();
