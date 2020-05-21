@@ -773,5 +773,91 @@ class AlunoController {
       return res.status(400).json({ error });
     }
   }
+
+  async porcentagemVeganoVegetariano(req, res) {
+    try {
+      const total_alunos = await alunoModel.countDocuments();
+      const result = await alunoModel.aggregate([
+        {
+          $facet: {
+            ovolactovegetariano: [
+              {
+                $match: { vegano_vegetariano: { $eq: 'Ovolactovegetariano' } },
+              },
+              { $count: 'ovolactovegetariano' },
+            ],
+            vegetariano_restrito: [
+              {
+                $match: {
+                  vegano_vegetariano: {
+                    $eq: 'Vegetariano restrito – alimentação',
+                  },
+                },
+              },
+              { $count: 'vegetariano_restrito' },
+            ],
+            vegano: [
+              {
+                $match: {
+                  vegano_vegetariano: { $eq: 'Vegano' },
+                },
+              },
+              { $count: 'vegano' },
+            ],
+            nao_vegano: [
+              {
+                $match: {
+                  vegano_vegetariano: { $eq: 'Não sou vegano/vegetariano' },
+                },
+              },
+              { $count: 'nao_vegano' },
+            ],
+          },
+        },
+        {
+          $project: {
+            ovolactovegetariano: {
+              $multiply: [
+                {
+                  $arrayElemAt: ['$ovolactovegetariano.ovolactovegetariano', 0],
+                },
+                100 / total_alunos,
+              ],
+            },
+            vegetariano_restrito: {
+              $multiply: [
+                {
+                  $arrayElemAt: [
+                    '$vegetariano_restrito.vegetariano_restrito',
+                    0,
+                  ],
+                },
+                100 / total_alunos,
+              ],
+            },
+            vegano: {
+              $multiply: [
+                {
+                  $arrayElemAt: ['$vegano.vegano', 0],
+                },
+                100 / total_alunos,
+              ],
+            },
+            nao_vegano: {
+              $multiply: [
+                {
+                  $arrayElemAt: ['$nao_vegano.nao_vegano', 0],
+                },
+                100 / total_alunos,
+              ],
+            },
+          },
+        },
+      ]);
+      return res.json({ total_alunos, porcentagem: result[0] });
+    } catch (error) {
+      return res.status(400).json({ error });
+    }
+  }
 }
 module.exports = new AlunoController();
