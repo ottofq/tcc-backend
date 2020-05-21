@@ -37,6 +37,7 @@ routes.get(
   auth,
   aluno.porcentagemConsumoBebidaAlcoolica
 );
+routes.get('/alunos/tabagista', auth, aluno.porcentagemTabagista);
 routes.get('/alunos/:id', auth, aluno.readOne);
 
 routes.post('/informacoes', auth, info.create);

@@ -964,5 +964,58 @@ class AlunoController {
       return res.status(400).json({ error });
     }
   }
+
+  async porcentagemTabagista(req, res) {
+    try {
+      const total_alunos = await alunoModel.countDocuments();
+      const result = await alunoModel.aggregate([
+        {
+          $facet: {
+            tabagista: [
+              {
+                $match: {
+                  tabagista: { $eq: true },
+                },
+              },
+              { $count: 'tabagista' },
+            ],
+            nao_tabagista: [
+              {
+                $match: {
+                  tabagista: {
+                    $eq: false,
+                  },
+                },
+              },
+              { $count: 'nao_tabagista' },
+            ],
+          },
+        },
+        {
+          $project: {
+            tabagista: {
+              $multiply: [
+                {
+                  $arrayElemAt: ['$tabagista.tabagista', 0],
+                },
+                100 / total_alunos,
+              ],
+            },
+            nao_tabagista: {
+              $multiply: [
+                {
+                  $arrayElemAt: ['$nao_tabagista.nao_tabagista', 0],
+                },
+                100 / total_alunos,
+              ],
+            },
+          },
+        },
+      ]);
+      return res.json({ total_alunos, porcentagem: result[0] });
+    } catch (error) {
+      return res.status(400).json({ error });
+    }
+  }
 }
 module.exports = new AlunoController();
