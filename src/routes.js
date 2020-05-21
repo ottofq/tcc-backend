@@ -32,6 +32,11 @@ routes.get(
   aluno.porcentagemNivelAtividadeFisica
 );
 routes.get('/alunos/vegetariano', auth, aluno.porcentagemVeganoVegetariano);
+routes.get(
+  '/alunos/consumobebidaalcoolica',
+  auth,
+  aluno.porcentagemConsumoBebidaAlcoolica
+);
 routes.get('/alunos/:id', auth, aluno.readOne);
 
 routes.post('/informacoes', auth, info.create);

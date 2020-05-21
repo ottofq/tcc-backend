@@ -859,5 +859,110 @@ class AlunoController {
       return res.status(400).json({ error });
     }
   }
+
+  async porcentagemConsumoBebidaAlcoolica(req, res) {
+    try {
+      const total_alunos = await alunoModel.countDocuments();
+      const result = await alunoModel.aggregate([
+        {
+          $facet: {
+            diariamente: [
+              {
+                $match: {
+                  consome_bebida_alcoolica: { $eq: 'Diariamente' },
+                },
+              },
+              { $count: 'diariamente' },
+            ],
+            semana_3vezes: [
+              {
+                $match: {
+                  consome_bebida_alcoolica: {
+                    $eq: 'de 3-6 vezes na semana',
+                  },
+                },
+              },
+              { $count: 'semana_3vezes' },
+            ],
+            semana_1vez: [
+              {
+                $match: {
+                  consome_bebida_alcoolica: { $eq: 'de 1-2 vezes na semana' },
+                },
+              },
+              { $count: 'semana_1vez' },
+            ],
+            raramente: [
+              {
+                $match: {
+                  consome_bebida_alcoolica: {
+                    $eq: 'Raramente',
+                  },
+                },
+              },
+              { $count: 'raramente' },
+            ],
+            nao_consome: [
+              {
+                $match: {
+                  consome_bebida_alcoolica: {
+                    $eq: 'Não consumo bebidas alcoólicas',
+                  },
+                },
+              },
+              { $count: 'nao_consome' },
+            ],
+          },
+        },
+        {
+          $project: {
+            diariamente: {
+              $multiply: [
+                {
+                  $arrayElemAt: ['$diariamente.diariamente', 0],
+                },
+                100 / total_alunos,
+              ],
+            },
+            semana_3vezes: {
+              $multiply: [
+                {
+                  $arrayElemAt: ['$semana_3vezes.semana_3vezes', 0],
+                },
+                100 / total_alunos,
+              ],
+            },
+            semana_1vez: {
+              $multiply: [
+                {
+                  $arrayElemAt: ['$semana_1vez.semana_1vez', 0],
+                },
+                100 / total_alunos,
+              ],
+            },
+            raramente: {
+              $multiply: [
+                {
+                  $arrayElemAt: ['$raramente.raramente', 0],
+                },
+                100 / total_alunos,
+              ],
+            },
+            nao_consome: {
+              $multiply: [
+                {
+                  $arrayElemAt: ['$nao_consome.nao_consome', 0],
+                },
+                100 / total_alunos,
+              ],
+            },
+          },
+        },
+      ]);
+      return res.json({ total_alunos, porcentagem: result[0] });
+    } catch (error) {
+      return res.status(400).json({ error });
+    }
+  }
 }
 module.exports = new AlunoController();
