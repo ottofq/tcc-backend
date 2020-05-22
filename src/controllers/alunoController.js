@@ -1017,5 +1017,138 @@ class AlunoController {
       return res.status(400).json({ error });
     }
   }
+
+  async porcentagemAvaliacao(req, res) {
+    try {
+      const avaliacoes = [
+        'avaliacao_RU.aroma',
+        'avaliacao_RU.coloracao_cardapio',
+        'avaliacao_RU.textura_preparacao',
+        'avaliacao_RU.sabor_preparacao',
+      ];
+
+      const total_alunos = await alunoModel.countDocuments();
+
+      const result = avaliacoes.map(item =>
+        alunoModel.aggregate([
+          {
+            $facet: {
+              muito_bom: [
+                {
+                  $match: {
+                    [item]: { $eq: 'Muito bom' },
+                  },
+                },
+                { $count: 'muito_bom' },
+              ],
+              bom: [
+                {
+                  $match: {
+                    [item]: {
+                      $eq: 'Bom',
+                    },
+                  },
+                },
+                { $count: 'bom' },
+              ],
+              regular: [
+                {
+                  $match: {
+                    [item]: {
+                      $eq: 'Regular',
+                    },
+                  },
+                },
+                { $count: 'regular' },
+              ],
+              ruim: [
+                {
+                  $match: {
+                    [item]: {
+                      $eq: 'Ruim',
+                    },
+                  },
+                },
+                { $count: 'ruim' },
+              ],
+              muito_ruim: [
+                {
+                  $match: {
+                    [item]: {
+                      $eq: 'Muito ruim',
+                    },
+                  },
+                },
+                { $count: 'muito_ruim' },
+              ],
+            },
+          },
+          {
+            $project: {
+              muito_bom: {
+                $multiply: [
+                  {
+                    $arrayElemAt: ['$muito_bom.muito_bom', 0],
+                  },
+                  100 / total_alunos,
+                ],
+              },
+              bom: {
+                $multiply: [
+                  {
+                    $arrayElemAt: ['$bom.bom', 0],
+                  },
+                  100 / total_alunos,
+                ],
+              },
+              regular: {
+                $multiply: [
+                  {
+                    $arrayElemAt: ['$regular.regular', 0],
+                  },
+                  100 / total_alunos,
+                ],
+              },
+              ruim: {
+                $multiply: [
+                  {
+                    $arrayElemAt: ['$ruim.ruim', 0],
+                  },
+                  100 / total_alunos,
+                ],
+              },
+              muito_ruim: {
+                $multiply: [
+                  {
+                    $arrayElemAt: ['$muito_ruim.muito_ruim', 0],
+                  },
+                  100 / total_alunos,
+                ],
+              },
+            },
+          },
+        ])
+      );
+
+      const [
+        aroma,
+        coloracao_cardapio,
+        textura_preparacao,
+        sabor,
+      ] = await Promise.all(result);
+
+      return res.json({
+        total_alunos,
+        porcentagem: {
+          aroma: aroma[0],
+          coloracao_cardapio: coloracao_cardapio[0],
+          textura_preparacao: textura_preparacao[0],
+          sabor: sabor[0],
+        },
+      });
+    } catch (error) {
+      return res.status(400).json({ error });
+    }
+  }
 }
 module.exports = new AlunoController();
