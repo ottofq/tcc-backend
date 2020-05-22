@@ -1150,5 +1150,117 @@ class AlunoController {
       return res.status(400).json({ error });
     }
   }
+
+  async porcentagemAvaliacaoGeral(req, res) {
+    try {
+      const total_alunos = await alunoModel.countDocuments();
+
+      const result = await alunoModel.aggregate([
+        {
+          $facet: {
+            muito_bom: [
+              {
+                $match: {
+                  'avaliacao_RU.avaliacao_geral': { $eq: 'Muito bom' },
+                },
+              },
+              { $count: 'muito_bom' },
+            ],
+            bom: [
+              {
+                $match: {
+                  'avaliacao_RU.avaliacao_geral': {
+                    $eq: 'Bom',
+                  },
+                },
+              },
+              { $count: 'bom' },
+            ],
+            regular: [
+              {
+                $match: {
+                  'avaliacao_RU.avaliacao_geral': {
+                    $eq: 'Regular',
+                  },
+                },
+              },
+              { $count: 'regular' },
+            ],
+            ruim: [
+              {
+                $match: {
+                  'avaliacao_RU.avaliacao_geral': {
+                    $eq: 'Ruim',
+                  },
+                },
+              },
+              { $count: 'ruim' },
+            ],
+            muito_ruim: [
+              {
+                $match: {
+                  'avaliacao_RU.avaliacao_geral': {
+                    $eq: 'Muito ruim',
+                  },
+                },
+              },
+              { $count: 'muito_ruim' },
+            ],
+          },
+        },
+        {
+          $project: {
+            muito_bom: {
+              $multiply: [
+                {
+                  $arrayElemAt: ['$muito_bom.muito_bom', 0],
+                },
+                100 / total_alunos,
+              ],
+            },
+            bom: {
+              $multiply: [
+                {
+                  $arrayElemAt: ['$bom.bom', 0],
+                },
+                100 / total_alunos,
+              ],
+            },
+            regular: {
+              $multiply: [
+                {
+                  $arrayElemAt: ['$regular.regular', 0],
+                },
+                100 / total_alunos,
+              ],
+            },
+            ruim: {
+              $multiply: [
+                {
+                  $arrayElemAt: ['$ruim.ruim', 0],
+                },
+                100 / total_alunos,
+              ],
+            },
+            muito_ruim: {
+              $multiply: [
+                {
+                  $arrayElemAt: ['$muito_ruim.muito_ruim', 0],
+                },
+                100 / total_alunos,
+              ],
+            },
+          },
+        },
+      ]);
+
+      return res.json({
+        total_alunos,
+        porcentagem: result[0],
+      });
+    } catch (error) {
+      return res.status(400).json({ error });
+    }
+  }
 }
 module.exports = new AlunoController();

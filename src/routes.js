@@ -39,6 +39,7 @@ routes.get(
 );
 routes.get('/alunos/tabagista', auth, aluno.porcentagemTabagista);
 routes.get('/alunos/avaliacao', auth, aluno.porcentagemAvaliacao);
+routes.get('/alunos/avaliacaogeral', auth, aluno.porcentagemAvaliacaoGeral);
 routes.get('/alunos/:id', auth, aluno.readOne);
 
 routes.post('/informacoes', auth, info.create);
