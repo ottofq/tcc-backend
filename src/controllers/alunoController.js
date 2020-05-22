@@ -136,8 +136,15 @@ class AlunoController {
 
   async readAll(req, res) {
     try {
-      const result = await alunoModel.find();
-      return res.json(result);
+      const { page } = req.query;
+      const skips = 8 * (page - 1);
+      const total_alunos = await alunoModel.countDocuments();
+      const result = await alunoModel
+        .find()
+        .skip(skips)
+        .limit(8)
+        .sort({ _id: -1 });
+      return res.json({ total_alunos, result });
     } catch (error) {
       return res.status(400).json(error);
     }
