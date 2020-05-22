@@ -1262,5 +1262,93 @@ class AlunoController {
       return res.status(400).json({ error });
     }
   }
+
+  async countMelhoriaRU(req, res) {
+    try {
+      const total_alunos = await alunoModel.countDocuments();
+      const result = await alunoModel.aggregate([
+        {
+          $facet: {
+            cardapio: [
+              { $match: { 'melhorias_RU.cardapio': { $eq: true } } },
+              { $count: 'cardapio' },
+            ],
+            sabor_preparacao: [
+              {
+                $match: {
+                  'melhorias_RU.melhoria_sabor_preparacao': { $eq: true },
+                },
+              },
+              { $count: 'sabor_preparacao' },
+            ],
+            opcao_vegetariana: [
+              {
+                $match: {
+                  'melhorias_RU.opcao_vegetariana': { $eq: true },
+                },
+              },
+              { $count: 'opcao_vegetariana' },
+            ],
+            estrutura_fisica: [
+              { $match: { 'melhorias_RU.estrutura_fisica': { $eq: true } } },
+              { $count: 'estrutura_fisica' },
+            ],
+            tempo_fila: [
+              {
+                $match: {
+                  'melhorias_RU.tempo_fila': { $eq: true },
+                },
+              },
+              { $count: 'tempo_fila' },
+            ],
+            preco_ticket: [
+              {
+                $match: {
+                  'melhorias_RU.preco_ticket': { $eq: true },
+                },
+              },
+              { $count: 'preco_ticket' },
+            ],
+            melhoria_outros: [
+              {
+                $match: {
+                  'melhorias_RU.melhoria_outros': { $exists: 1 },
+                },
+              },
+              { $count: 'melhoria_outros' },
+            ],
+          },
+        },
+        {
+          $project: {
+            cardapio: {
+              $arrayElemAt: ['$cardapio.cardapio', 0],
+            },
+            sabor_preparacao: {
+              $arrayElemAt: ['$sabor_preparacao.sabor_preparacao', 0],
+            },
+            opcao_vegetariana: {
+              $arrayElemAt: ['$opcao_vegetariana.opcao_vegetariana', 0],
+            },
+            estrutura_fisica: {
+              $arrayElemAt: ['$estrutura_fisica.estrutura_fisica', 0],
+            },
+            tempo_fila: {
+              $arrayElemAt: ['$tempo_fila.tempo_fila', 0],
+            },
+            preco_ticket: {
+              $arrayElemAt: ['$preco_ticket.preco_ticket', 0],
+            },
+            melhoria_outros: {
+              $arrayElemAt: ['$melhoria_outros.melhoria_outros', 0],
+            },
+          },
+        },
+      ]);
+      return res.json({ total_alunos, totais: result[0] });
+    } catch (error) {
+      return res.status(400).json({ error });
+    }
+  }
 }
 module.exports = new AlunoController();
