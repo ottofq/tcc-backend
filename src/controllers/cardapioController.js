@@ -55,15 +55,20 @@ class CardapioController {
   }
 
   async readAll(req, res) {
-    const { page } = req.query;
-    const skips = 10 * (page - 1);
-    const result = await cardapioModel
-      .find()
-      .skip(skips)
-      .limit(10)
-      .sort({ _id: -1 });
+    try {
+      const { page } = req.query;
+      const skips = 8 * (page - 1);
+      const total_cardapios = await cardapioModel.countDocuments();
+      const result = await cardapioModel
+        .find()
+        .skip(skips)
+        .limit(8)
+        .sort({ _id: -1 });
 
-    return res.json(result);
+      return res.json({ total_cardapios, result });
+    } catch (error) {
+      return res.status(400).json(error);
+    }
   }
 
   async readOne(req, res) {
