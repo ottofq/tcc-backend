@@ -21,6 +21,26 @@ routes.delete('/cardapio/:id', auth, cardapio.delete);
 
 routes.post('/alunos', aluno.create);
 routes.get('/alunos', auth, aluno.readAll);
+routes.get('/alunos/alergias', auth, aluno.countAlergias);
+routes.get('/alunos/patologias', auth, aluno.countPatologias);
+routes.get('/alunos/bolsistas', auth, aluno.porcentagemBolsista);
+routes.get('/alunos/frequencia', auth, aluno.porcentagemFrequenciaRU);
+routes.get('/alunos/tiporefeicao', auth, aluno.porcentagemTipoRefeicaoRU);
+routes.get(
+  '/alunos/nivelatividadefisica',
+  auth,
+  aluno.porcentagemNivelAtividadeFisica
+);
+routes.get('/alunos/vegetariano', auth, aluno.porcentagemVeganoVegetariano);
+routes.get(
+  '/alunos/consumobebidaalcoolica',
+  auth,
+  aluno.porcentagemConsumoBebidaAlcoolica
+);
+routes.get('/alunos/tabagista', auth, aluno.porcentagemTabagista);
+routes.get('/alunos/avaliacao', auth, aluno.porcentagemAvaliacao);
+routes.get('/alunos/avaliacaogeral', auth, aluno.porcentagemAvaliacaoGeral);
+routes.get('/alunos/melhoriasru', auth, aluno.countMelhoriaRU);
 routes.get('/alunos/:id', auth, aluno.readOne);
 
 routes.post('/informacoes', auth, info.create);
