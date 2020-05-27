@@ -15,7 +15,6 @@ routes.get('/cardapio/:id/comentarios', cardapio.readComments);
 routes.get('/cardapio/avg/:id', cardapio.average);
 routes.post('/cardapio', auth, cardapio.create);
 routes.post('/cardapio/avaliar/:id', cardapio.rate);
-routes.post('/cardapio/comentar/:id', cardapio.comment);
 routes.put('/cardapio/:id', auth, cardapio.update);
 routes.delete('/cardapio/:id', auth, cardapio.delete);
 
