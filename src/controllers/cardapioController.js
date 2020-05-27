@@ -1,5 +1,4 @@
 const cardapioModel = require('../models/cardapioModel');
-const comentarioModel = require('../models/comentarioModel');
 const avaliacaoModel = require('../models/avaliacaoModel');
 const cache = require('../redis');
 
@@ -42,7 +41,6 @@ class CardapioController {
     const result = await cardapioModel.create(cardapio);
     // eslint-disable-next-line no-underscore-dangle
     const id = result._id;
-    comentarioModel.create({ cardapio: id });
     avaliacaoModel.create({ cardapio: id });
 
     return res.json(result);
@@ -93,9 +91,9 @@ class CardapioController {
   }
 
   async rate(req, res) {
-    const { nota } = req.body;
+    const { nota, user_id, comentario, nome } = req.body;
     const { id } = req.params;
-    const { user_id } = req.headers;
+    // const { user_id } = req.headers;
 
     const user = await avaliacaoModel.findOne({
       cardapio: id,
@@ -105,7 +103,13 @@ class CardapioController {
     if (user) {
       const result = await avaliacaoModel.updateOne(
         { cardapio: id, 'avaliacoes.user_id': user_id },
-        { $set: { 'avaliacoes.$.nota': nota } }
+        {
+          $set: {
+            'avaliacoes.$.nota': nota,
+            'avalicacoes.$.comentario': comentario,
+            'avalicacoes.$.nome': nome,
+          },
+        }
       );
       return res.json(result);
     }
@@ -113,7 +117,7 @@ class CardapioController {
     const result = await avaliacaoModel.updateOne(
       { cardapio: id },
       {
-        $push: { avaliacoes: { user_id, nota } },
+        $push: { avaliacoes: { user_id, nota, comentario, nome } },
       }
     );
 
@@ -133,7 +137,7 @@ class CardapioController {
     const media = notas / votos;
 
     if (media > 0) {
-      cardapioModel.updateOne(
+      await cardapioModel.updateOne(
         { _id: id },
         {
           $set: { media_geral: media },
@@ -144,30 +148,11 @@ class CardapioController {
     return res.json({ id, media, votos });
   }
 
-  async comment(req, res) {
-    const { comentario } = req.body;
-    const { id } = req.params;
-    const { user_id } = req.headers;
-
-    const comment = { user_id, comentario };
-
-    try {
-      const result = await comentarioModel.updateOne(
-        { cardapio: id },
-        {
-          $push: { comentarios: { $each: [comment], $position: 0 } },
-        }
-      );
-      return res.json(result);
-    } catch (error) {
-      return res.status(400).json({ error });
-    }
-  }
-
   async delete(req, res) {
     const { id } = req.params;
 
     const result = await cardapioModel.deleteOne({ _id: id });
+    await avaliacaoModel.deleteOne({ cardapio: id });
     await cache.del(`cardapio:${id}`);
 
     return res.json(result);
@@ -218,7 +203,7 @@ class CardapioController {
   async readComments(req, res) {
     const { id } = req.params;
 
-    const result = await comentarioModel.findOne({ cardapio: id });
+    const result = await avaliacaoModel.findOne({ cardapio: id });
 
     return res.json(result);
   }
