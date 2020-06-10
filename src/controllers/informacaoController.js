@@ -4,8 +4,10 @@ class InfoController {
   async create(req, res) {
     const { titulo, descricao } = req.body;
 
+    const description = descricao.replace(/(\r\n|\n|\r)/gm, '');
+
     try {
-      const result = await infoModel.create({ titulo, descricao });
+      const result = await infoModel.create({ titulo, descricao: description });
       return res.json(result);
     } catch (error) {
       return res.status(400).json(error);
@@ -45,12 +47,14 @@ class InfoController {
     const { id } = req.params;
     const { titulo, descricao } = req.body;
 
+    const description = descricao.replace(/(\r\n|\n|\r)/gm, '');
+
     try {
       const result = await infoModel.updateOne(
         { _id: id },
         {
           titulo,
-          descricao,
+          descricao: description,
         }
       );
       return res.json(result);
