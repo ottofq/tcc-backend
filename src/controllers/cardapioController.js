@@ -207,8 +207,14 @@ class CardapioController {
 
   async readComments(req, res) {
     const { id } = req.params;
+    let { skip, limit } = req.query;
+    skip = Number(skip);
+    limit = Number(limit);
 
-    const result = await avaliacaoModel.findOne({ cardapio: id });
+    const result = await avaliacaoModel.findOne(
+      { cardapio: id },
+      { avaliacoes: { $slice: [skip, limit] } }
+    );
 
     return res.json(result);
   }
