@@ -42,7 +42,7 @@ class User {
     );
 
     if (!password) {
-      res.status(401).json({ error: 'Senha incorreta!' });
+      return res.status(401).json({ error: 'Senha incorreta!' });
     }
 
     try {
