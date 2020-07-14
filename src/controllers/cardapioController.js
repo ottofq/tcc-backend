@@ -1,3 +1,4 @@
+const { ObjectId } = require('mongoose').Types;
 const cardapioModel = require('../models/cardapioModel');
 const avaliacaoModel = require('../models/avaliacaoModel');
 const cache = require('../redis');
@@ -211,12 +212,17 @@ class CardapioController {
     skip = Number(skip);
     limit = Number(limit);
 
-    const result = await avaliacaoModel.findOne(
-      { cardapio: id },
-      { avaliacoes: { $slice: [skip, limit] } }
-    );
+    const result = await avaliacaoModel.aggregate([
+      { $match: { cardapio: ObjectId(id) } },
+      {
+        $project: {
+          totalAvaliacoes: { $size: '$avaliacoes' },
+          avaliacoes: { $slice: ['$avaliacoes', skip, limit] },
+        },
+      },
+    ]);
 
-    return res.json(result);
+    return res.json(result[0]);
   }
 }
 module.exports = new CardapioController();
