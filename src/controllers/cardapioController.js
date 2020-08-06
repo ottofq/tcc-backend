@@ -133,15 +133,6 @@ class CardapioController {
   async average(req, res) {
     const { id } = req.params;
 
-    const result = await avaliacaoModel.findOne({ cardapio: id });
-
-    const notas = result.avaliacoes.reduce((acumulado, item) => {
-      return acumulado + item.nota;
-    }, 0);
-
-    const votos = result.avaliacoes.length;
-    const media = notas / votos;
-
     const avaliacao = await avaliacaoModel.aggregate([
       { $match: { cardapio: ObjectId(id) } },
       {
