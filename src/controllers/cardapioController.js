@@ -92,7 +92,7 @@ class CardapioController {
   }
 
   async rate(req, res) {
-    const { nota, user_id, comentario, nome } = req.body;
+    const { avaliacao, user_id, comentario, nome } = req.body;
     const { id } = req.params;
     // const { user_id } = req.headers;
 
@@ -106,7 +106,7 @@ class CardapioController {
         { cardapio: id, 'avaliacoes.user_id': user_id },
         {
           $set: {
-            'avaliacoes.$.nota': nota,
+            'avaliacoes.$.avaliacao': avaliacao,
             'avalicacoes.$.comentario': comentario,
             'avalicacoes.$.nome': nome,
           },
@@ -120,7 +120,7 @@ class CardapioController {
       {
         $push: {
           avaliacoes: {
-            $each: [{ user_id, nota, comentario, nome }],
+            $each: [{ user_id, avaliacao, comentario, nome }],
             $position: 0,
           },
         },
