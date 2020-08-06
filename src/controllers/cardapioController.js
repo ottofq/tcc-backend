@@ -142,16 +142,24 @@ class CardapioController {
     const votos = result.avaliacoes.length;
     const media = notas / votos;
 
-    if (media > 0) {
-      await cardapioModel.updateOne(
-        { _id: id },
-        {
-          $set: { media_geral: media },
-        }
-      );
-    }
+    const avaliacao = await avaliacaoModel.aggregate([
+      { $match: { cardapio: ObjectId(id) } },
+      {
+        $project: {
+          totalAvaliacoes: { $size: '$avaliacoes' },
+          avaliacao: {
+            entrada: { $avg: '$avaliacoes.avaliacao.entrada' },
+            prato_proteico: { $avg: '$avaliacoes.avaliacao.prato_proteico' },
+            opcao: { $avg: '$avaliacoes.avaliacao.opcao' },
+            acompanhamento: { $avg: '$avaliacoes.avaliacao.acompanhamento' },
+            guarnicao: { $avg: '$avaliacoes.avaliacao.guarnicao' },
+            sobremesa: { $avg: '$avaliacoes.avaliacao.sobremesa' },
+          },
+        },
+      },
+    ]);
 
-    return res.json({ id, media, votos });
+    return res.json(avaliacao[0]);
   }
 
   async delete(req, res) {
