@@ -215,8 +215,10 @@ class CardapioController {
       { $match: { cardapio: ObjectId(id) } },
       {
         $project: {
-          totalAvaliacoes: { $size: '$avaliacoes' },
-          avaliacoes: { $slice: ['$avaliacoes', skip, limit] },
+          totalAvaliacoes: { $size: '$avaliacoes.comentario' },
+          avaliacoes: {
+            $slice: ['$avaliacoes', skip, limit],
+          },
         },
       },
     ]);
