@@ -1,8 +1,11 @@
 const { Schema, model, Types } = require('mongoose');
 
-const userSchema = new Schema(
+const studentSchema = new Schema(
   {
-    user_id: { type: String },
+    student_id: {
+      type: Types.ObjectId,
+      required: true,
+    },
     nome: { type: String },
     avaliacao: {
       entrada: { type: Number },
@@ -24,7 +27,7 @@ const avaliacaoSchema = new Schema({
     required: true,
   },
   avaliacoes: {
-    type: [userSchema],
+    type: [studentSchema],
   },
 });
 
