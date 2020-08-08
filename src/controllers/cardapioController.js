@@ -2,6 +2,7 @@ const { ObjectId } = require('mongoose').Types;
 const cardapioModel = require('../models/cardapioModel');
 const avaliacaoModel = require('../models/avaliacaoModel');
 const cache = require('../redis');
+const alunoModel = require('../models/alunoModel');
 
 class CardapioController {
   async create(req, res) {
@@ -92,42 +93,54 @@ class CardapioController {
   }
 
   async rate(req, res) {
-    const { avaliacao, user_id, comentario, nome } = req.body;
+    const { avaliacao, student_id, comentario, nome } = req.body;
     const { id } = req.params;
     // const { user_id } = req.headers;
 
-    const user = await avaliacaoModel.findOne({
-      cardapio: id,
-      'avaliacoes.user_id': user_id,
-    });
+    try {
+      const student = await alunoModel.findById({ _id: student_id });
 
-    if (user) {
-      const result = await avaliacaoModel.updateOne(
-        { cardapio: id, 'avaliacoes.user_id': user_id },
-        {
-          $set: {
-            'avaliacoes.$.avaliacao': avaliacao,
-            'avalicacoes.$.comentario': comentario,
-            'avalicacoes.$.nome': nome,
-          },
+      if (student) {
+        const studentRate = await avaliacaoModel.findOne({
+          cardapio: id,
+          'avaliacoes.student_id': student_id,
+        });
+
+        if (studentRate) {
+          const result = await avaliacaoModel.updateOne(
+            { cardapio: id, 'avaliacoes.student_id': student_id },
+            {
+              $set: {
+                'avaliacoes.$.avaliacao': avaliacao,
+                'avalicacoes.$.comentario': comentario,
+                'avalicacoes.$.nome': student.nome,
+              },
+            }
+          );
+          return res.json(result);
         }
-      );
-      return res.json(result);
-    }
 
-    const result = await avaliacaoModel.updateOne(
-      { cardapio: id },
-      {
-        $push: {
-          avaliacoes: {
-            $each: [{ user_id, avaliacao, comentario, nome }],
-            $position: 0,
-          },
-        },
+        const result = await avaliacaoModel.updateOne(
+          { cardapio: id },
+          {
+            $push: {
+              avaliacoes: {
+                $each: [
+                  { student_id, avaliacao, comentario, nome: student.nome },
+                ],
+                $position: 0,
+              },
+            },
+          }
+        );
+
+        return res.json(result);
+      } else {
+        throw new Error('student not found');
       }
-    );
-
-    return res.json(result);
+    } catch (error) {
+      console.log(error.message);
+    }
   }
 
   async average(req, res) {
@@ -215,7 +228,7 @@ class CardapioController {
       { $match: { cardapio: ObjectId(id) } },
       {
         $project: {
-          totalAvaliacoes: { $size: '$avaliacoes.comentario' },
+          total_comentarios: { $size: '$avaliacoes.comentario' },
           avaliacoes: {
             $slice: ['$avaliacoes', skip, limit],
           },
