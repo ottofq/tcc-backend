@@ -1,6 +1,6 @@
 const { model, Schema } = require('mongoose');
 
-const infoSchema = new Schema({
+const newsSchema = new Schema({
   data: {
     type: Date,
     default: Date.now,
@@ -15,4 +15,4 @@ const infoSchema = new Schema({
   },
 });
 
-module.exports = model('Informacoes', infoSchema);
+module.exports = model('news', newsSchema);

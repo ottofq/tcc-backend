@@ -20,7 +20,7 @@ const studentSchema = new Schema(
   { _id: false }
 );
 
-const avaliacaoSchema = new Schema({
+const ratingSchema = new Schema({
   cardapio: {
     type: Types.ObjectId,
     ref: 'Cardapio',
@@ -31,4 +31,4 @@ const avaliacaoSchema = new Schema({
   },
 });
 
-module.exports = model('Avaliacao', avaliacaoSchema);
+module.exports = model('rating', ratingSchema);
