@@ -7,7 +7,7 @@ const {
   listMenuService,
 } = require('../services/menuServices');
 
-class CardapioController {
+class MenuController {
   async create(req, res) {
     const data = Date.now();
     const {
@@ -88,7 +88,7 @@ class CardapioController {
     const {
       tipo,
       entrada,
-      proteina,
+      prato_proteico,
       opcao,
       acompanhamento,
       guarnicao,
@@ -99,7 +99,7 @@ class CardapioController {
       const menuUpdated = await updateMenuService.handle(id, {
         tipo,
         entrada,
-        proteina,
+        prato_proteico,
         opcao,
         acompanhamento,
         guarnicao,
@@ -111,4 +111,4 @@ class CardapioController {
     }
   }
 }
-module.exports = new CardapioController();
+module.exports = new MenuController();
