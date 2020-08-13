@@ -1,13 +1,17 @@
 const menuRepository = require('../../repositories/menuRepository');
-const { deleteRatingService } = require('../ratingServices');
+const { deleteRatingCollectionService } = require('../ratingServices');
 
 class DeleteMenuService {
   async handle(menuId) {
-    const result = await menuRepository.deleteMenu(menuId);
-    await deleteRatingService.handle(menuId);
-    // await cache.del(`cardapio:${id}`);
+    try {
+      const result = await menuRepository.deleteMenu(menuId);
+      await deleteRatingCollectionService.handle(menuId);
+      // await cache.del(`cardapio:${id}`);
 
-    return result;
+      return result;
+    } catch (error) {
+      throw Error(error.message);
+    }
   }
 }
 

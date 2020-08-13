@@ -2,11 +2,15 @@ const menuRepository = require('../../repositories/menuRepository');
 
 class UpdateMenuService {
   async handle(id, menu) {
-    const menuUpdated = await menuRepository.updateMenu(id, menu);
+    try {
+      const menuUpdated = await menuRepository.updateMenu(id, menu);
 
-    // await cache.del(`cardapio:${id}`);
+      // await cache.del(`cardapio:${id}`);
 
-    return menuUpdated;
+      return menuUpdated;
+    } catch (error) {
+      throw Error(error.message);
+    }
   }
 }
 

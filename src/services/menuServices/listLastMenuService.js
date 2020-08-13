@@ -1,11 +1,15 @@
 const menuRepository = require('../../repositories/menuRepository');
 
-class ListMenusService {
+class ListLastMenuService {
   async handle() {
-    const menu = await menuRepository.listLastMenu();
+    try {
+      const menu = await menuRepository.listLastMenu();
 
-    return menu;
+      return menu;
+    } catch (error) {
+      throw new Error(error.message);
+    }
   }
 }
 
-module.exports = new ListMenusService();
+module.exports = new ListLastMenuService();
