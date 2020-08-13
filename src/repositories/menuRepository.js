@@ -1,16 +1,13 @@
 const menuModel = require('../models/menuModel');
-const ratingModel = require('../models/ratingModel');
 
 class MenuRepository {
   async create(menu) {
     try {
       const menuCreated = await menuModel.create(menu);
-      const menuId = menuCreated._id;
-      await ratingModel.create({ cardapio: menuId });
 
       return menuCreated;
     } catch (error) {
-      throw Error('Error on create a new menu');
+      throw Error(error.message);
     }
   }
 
@@ -24,7 +21,7 @@ class MenuRepository {
 
       return menus;
     } catch (error) {
-      throw Error('Error when listing menus');
+      throw Error(error.message);
     }
   }
 
@@ -33,7 +30,7 @@ class MenuRepository {
       const totalMenus = await menuModel.countDocuments();
       return totalMenus;
     } catch (error) {
-      throw Error('Error when count menus');
+      throw Error(error.message);
     }
   }
 
@@ -42,7 +39,7 @@ class MenuRepository {
       const menu = await menuModel.findOne().sort({ _id: -1 });
       return menu;
     } catch (error) {
-      throw Error('Error when list last menu saved');
+      throw Error(error.message);
     }
   }
 
@@ -51,7 +48,7 @@ class MenuRepository {
       const menu = await menuModel.findOne({ _id: id });
       return menu;
     } catch (error) {
-      throw Error('Menu not found in database');
+      throw Error(error.message);
     }
   }
 
@@ -60,7 +57,7 @@ class MenuRepository {
       const result = await menuModel.deleteOne({ _id: id });
       return result;
     } catch (error) {
-      throw Error('Error when delete menu');
+      throw Error(error.message);
     }
   }
 
@@ -82,7 +79,7 @@ class MenuRepository {
       );
       return menuUpdated;
     } catch (error) {
-      throw Error('Error when update menu');
+      throw Error(error.message);
     }
   }
 }
