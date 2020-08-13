@@ -1,6 +1,10 @@
-const alunoModel = require('../models/alunoModel');
+const alunoModel = require('../models/studentModel');
+const {
+  createStudentService,
+  listStudentsService,
+} = require('../services/studentServices');
 
-class AlunoController {
+class StudentController {
   async create(req, res) {
     const {
       nome,
@@ -64,7 +68,7 @@ class AlunoController {
       },
     } = req.body;
 
-    const aluno = {
+    const student = {
       nome,
       matricula,
       data_nascimento,
@@ -127,24 +131,25 @@ class AlunoController {
     };
 
     try {
-      const result = await alunoModel.create(aluno);
-      return res.json(result);
+      const studentCreated = await createStudentService.handle(student);
+      return res.status(200).json(studentCreated);
     } catch (error) {
-      return res.status(400).json(error);
+      return res.status(400).json({ error: error.message });
     }
   }
 
   async readAll(req, res) {
     try {
       const { page } = req.query;
-      const skips = 8 * (page - 1);
-      const total_alunos = await alunoModel.countDocuments();
-      const result = await alunoModel
-        .find()
-        .skip(skips)
-        .limit(8)
-        .sort({ _id: -1 });
-      return res.json({ total_alunos, result });
+      const skip = 8 * (page - 1);
+      const limit = 8;
+
+      const { total_students, students } = await listStudentsService.handle(
+        skip,
+        limit
+      );
+
+      return res.status(200).json({ total_students, students });
     } catch (error) {
       return res.status(400).json(error);
     }
@@ -1358,4 +1363,4 @@ class AlunoController {
     }
   }
 }
-module.exports = new AlunoController();
+module.exports = new StudentController();
