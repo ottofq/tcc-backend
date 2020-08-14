@@ -8,6 +8,8 @@ O TCC está sendo desenvolvido como um Full Stack App, ou seja, Front-end, Back-
  - Front-end (https://github.com/ottofq/tcc-frontend)
  - Mobile (https://github.com/ottofq/tcc-mobile)
  
+O Back-end será o responsável por garantir a aplicação de toda Regra de Negócio do projeto, além como guardar e administrar todos os dados enviados tanto do Front-end quanto do Mobile, e por esse motivo ele será desenvolvido como uma API Rest
+ 
  
  ### 🛠 Feito com
   - [NodeJS](https://github.com/nodejs/node)
