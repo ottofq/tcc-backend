@@ -27,7 +27,7 @@ class UserRepository {
 
   async findEmail(email) {
     try {
-      const user = await userModel.findOne({ email });
+      const user = await userModel.findOne({ email }).select('+hash_password');
 
       return user;
     } catch (error) {
