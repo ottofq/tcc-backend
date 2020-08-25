@@ -1,13 +1,8 @@
 require('dotenv').config();
-const mongoose = require('mongoose');
+require('./database/mongo');
+require('./database/redis');
 
 const app = require('./app');
-
-mongoose.connect(process.env.MONGO_URL, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-  useCreateIndex: true,
-});
 
 app.listen(process.env.PORT, () => {
   // eslint-disable-next-line no-console
