@@ -1,7 +1,7 @@
-const alunoModel = require('../models/studentModel');
 const {
   createStudentService,
   listStudentsService,
+  listStudentService,
 } = require('../services/studentServices');
 
 class StudentController {
@@ -139,7 +139,7 @@ class StudentController {
     }
   }
 
-  async readAll(req, res) {
+  async list(req, res) {
     try {
       const { page } = req.query;
       const skip = 8 * (page - 1);
@@ -156,14 +156,14 @@ class StudentController {
     }
   }
 
-  async readOne(req, res) {
+  async findOne(req, res) {
     const { id } = req.params;
 
     try {
-      const result = await alunoModel.findById({ _id: id });
+      const result = await listStudentService.handle(id);
       return res.json(result);
     } catch (error) {
-      return res.status(400).json({ error: 'Aluno não encontrado' });
+      return res.status(400).json({ error: error.message });
     }
   }
 }
