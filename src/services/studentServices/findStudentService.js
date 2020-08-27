@@ -17,7 +17,7 @@ class FindStudentService {
       if (error instanceof DBError) {
         throw new InternalServerError('Internal Server Error');
       }
-      throw NotFoundError(error.message);
+      throw new NotFoundError(error.message);
     }
   }
 }
