@@ -1,4 +1,5 @@
 const menuModel = require('../models/menuModel');
+const DBError = require('../utils/errors/dbError');
 
 class MenuRepository {
   async create(menu) {
@@ -7,7 +8,7 @@ class MenuRepository {
 
       return menuCreated;
     } catch (error) {
-      throw Error(error.message);
+      throw new DBError(error.message);
     }
   }
 
@@ -21,7 +22,17 @@ class MenuRepository {
 
       return menus;
     } catch (error) {
-      throw Error(error.message);
+      throw new DBError(error.message);
+    }
+  }
+
+  async findById(id) {
+    try {
+      const menus = await menuModel.findById(id);
+
+      return menus;
+    } catch (error) {
+      throw new DBError(error.message);
     }
   }
 
@@ -30,7 +41,7 @@ class MenuRepository {
       const totalMenus = await menuModel.countDocuments();
       return totalMenus;
     } catch (error) {
-      throw Error(error.message);
+      throw new DBError(error.message);
     }
   }
 
@@ -39,7 +50,7 @@ class MenuRepository {
       const menu = await menuModel.findOne().sort({ _id: -1 });
       return menu;
     } catch (error) {
-      throw Error(error.message);
+      throw new DBError(error.message);
     }
   }
 
@@ -48,7 +59,7 @@ class MenuRepository {
       const menu = await menuModel.findOne({ _id: id });
       return menu;
     } catch (error) {
-      throw Error(error.message);
+      throw new DBError(error.message);
     }
   }
 
@@ -57,7 +68,7 @@ class MenuRepository {
       const result = await menuModel.deleteOne({ _id: id });
       return result;
     } catch (error) {
-      throw Error(error.message);
+      throw new DBError(error.message);
     }
   }
 
@@ -79,7 +90,7 @@ class MenuRepository {
       );
       return menuUpdated;
     } catch (error) {
-      throw Error(error.message);
+      throw new DBError(error.message);
     }
   }
 }
