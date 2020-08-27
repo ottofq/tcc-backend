@@ -1,9 +1,9 @@
 const createStudentService = require('./createStudentService');
-const listStudentService = require('./listStudentService');
+const findStudentService = require('./findStudentService');
 const listStudentsService = require('./listStudentsService');
 
 module.exports = {
   createStudentService,
-  listStudentService,
+  findStudentService,
   listStudentsService,
 };
