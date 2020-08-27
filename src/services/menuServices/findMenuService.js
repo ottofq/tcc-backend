@@ -2,27 +2,31 @@ const menuRepository = require('../../repositories/menuRepository');
 const InternalServerError = require('../../utils/errors/internalServerError');
 const NotFoundError = require('../../utils/errors/notFoundError');
 
-class UpdateMenuService {
-  async handle(id, menu) {
+class FindMenuService {
+  async handle(id) {
     try {
-      const menuExists = await menuRepository.findById(id);
+      const menu = await menuRepository.findById(id);
 
-      if (!menuExists) {
+      if (!menu) {
         throw Error('Menu not found');
       }
-      const menuUpdated = await menuRepository.updateMenu(id, menu);
 
-      // await cache.del(`cardapio:${id}`);
+      //  tratar o cache
+      // if (exists) {
+      //   console.log('cardapio no cache');
+      //   return res.json(JSON.parse(exists));
+      // }
 
-      return menuUpdated;
+      // await cache.setex(`cardapio:${id}`, 28800, JSON.stringify(result));
+
+      return menu;
     } catch (error) {
       if (error.name === 'DBError') {
         throw new InternalServerError('Internal Server Error');
       }
-
       throw new NotFoundError(error.message);
     }
   }
 }
 
-module.exports = new UpdateMenuService();
+module.exports = new FindMenuService();

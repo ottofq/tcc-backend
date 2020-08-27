@@ -1,5 +1,6 @@
 const menuRepository = require('../../repositories/menuRepository');
 const createRatingCollectionService = require('../ratingServices/createRatingColletionService');
+const InternalServerError = require('../../utils/errors/internalServerError');
 
 class CreateMenuService {
   async handle(menu) {
@@ -9,7 +10,7 @@ class CreateMenuService {
 
       return menuCreated;
     } catch (error) {
-      throw new Error(error.message);
+      throw new InternalServerError('Internal Server Error');
     }
   }
 }

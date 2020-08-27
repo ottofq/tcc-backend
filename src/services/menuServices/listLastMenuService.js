@@ -1,4 +1,5 @@
 const menuRepository = require('../../repositories/menuRepository');
+const InternalServerError = require('../../utils/errors/internalServerError');
 
 class ListLastMenuService {
   async handle() {
@@ -7,7 +8,7 @@ class ListLastMenuService {
 
       return menu;
     } catch (error) {
-      throw new Error(error.message);
+      throw new InternalServerError('Internal Server Error');
     }
   }
 }

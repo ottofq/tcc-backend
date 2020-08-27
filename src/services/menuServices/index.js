@@ -3,7 +3,7 @@ const deleteMenuService = require('./deleteMenuService');
 const updateMenuService = require('./updateMenuService');
 const listMenusService = require('./listMenusService');
 const listLastMenuService = require('./listLastMenuService');
-const listMenuService = require('./listMenuService');
+const findMenuService = require('./findMenuService');
 
 module.exports = {
   createMenuService,
@@ -11,5 +11,5 @@ module.exports = {
   updateMenuService,
   listMenusService,
   listLastMenuService,
-  listMenuService,
+  findMenuService,
 };
