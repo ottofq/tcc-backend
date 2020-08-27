@@ -1,4 +1,5 @@
 const studentModel = require('../models/studentModel');
+const DBError = require('../utils/errors/dbError');
 
 class StudentRepository {
   async create(student) {
@@ -6,7 +7,7 @@ class StudentRepository {
       const studentCreated = await studentModel.create(student);
       return studentCreated;
     } catch (error) {
-      throw Error(error.message);
+      throw new DBError(error.message);
     }
   }
 
@@ -15,7 +16,16 @@ class StudentRepository {
       const student = await studentModel.findById(id);
       return student;
     } catch (error) {
-      throw Error(error.message);
+      throw new DBError(error.message);
+    }
+  }
+
+  async findByRegistration(registrationID) {
+    try {
+      const student = await studentModel.findOne({ matricula: registrationID });
+      return student;
+    } catch (error) {
+      throw new DBError(error.message);
     }
   }
 
@@ -29,7 +39,7 @@ class StudentRepository {
 
       return students;
     } catch (error) {
-      throw Error(error.message);
+      throw new DBError(error.message);
     }
   }
 
@@ -39,7 +49,7 @@ class StudentRepository {
 
       return total_students;
     } catch (error) {
-      throw Error(error.message);
+      throw new DBError(error.message);
     }
   }
 
@@ -102,7 +112,7 @@ class StudentRepository {
 
       return allergiesCount;
     } catch (error) {
-      throw Error(error.message);
+      throw new DBError(error.message);
     }
   }
 
@@ -184,7 +194,7 @@ class StudentRepository {
       ]);
       return percentageAllergies;
     } catch (error) {
-      throw Error(error.message);
+      throw new DBError(error.message);
     }
   }
 
@@ -267,7 +277,7 @@ class StudentRepository {
 
       return countPatologies;
     } catch (error) {
-      throw Error(error.message);
+      throw new DBError(error.message);
     }
   }
 
@@ -395,7 +405,7 @@ class StudentRepository {
 
       return percentagePathologies;
     } catch (error) {
-      throw Error(error.message);
+      throw new DBError(error.message);
     }
   }
 
@@ -456,7 +466,7 @@ class StudentRepository {
 
       return percentageScholarship;
     } catch (error) {
-      throw Error(error.message);
+      throw new DBError(error.message);
     }
   }
 
@@ -539,7 +549,7 @@ class StudentRepository {
 
       return frequencyMeals;
     } catch (error) {
-      throw Error(error.message);
+      throw new DBError(error.message);
     }
   }
 
@@ -606,7 +616,7 @@ class StudentRepository {
 
       return percentageTypeOfMeals;
     } catch (error) {
-      throw Error(error.message);
+      throw new DBError(error.message);
     }
   }
 
@@ -689,7 +699,7 @@ class StudentRepository {
 
       return physicalLevel;
     } catch (error) {
-      throw Error(error.message);
+      throw new DBError(error.message);
     }
   }
 
@@ -779,7 +789,7 @@ class StudentRepository {
 
       return vegans;
     } catch (error) {
-      throw Error(error.message);
+      throw new DBError(error.message);
     }
   }
 
@@ -888,7 +898,7 @@ class StudentRepository {
 
       return alcoholConsumption;
     } catch (error) {
-      throw Error(error.message);
+      throw new DBError(error.message);
     }
   }
 
@@ -945,7 +955,7 @@ class StudentRepository {
 
       return smokers;
     } catch (error) {
-      throw Error(error.message);
+      throw new DBError(error.message);
     }
   }
 
@@ -1072,7 +1082,7 @@ class StudentRepository {
 
       return { aroma, coloracao_cardapio, textura_preparacao, sabor };
     } catch (error) {
-      throw Error(error.message);
+      throw new DBError(error.message);
     }
   }
 
@@ -1183,7 +1193,7 @@ class StudentRepository {
 
       return generalRatings;
     } catch (error) {
-      throw Error(error.message);
+      throw new DBError(error.message);
     }
   }
 
@@ -1271,7 +1281,7 @@ class StudentRepository {
 
       return improvements;
     } catch (error) {
-      throw Error(error.message);
+      throw new DBError(error.message);
     }
   }
 }
