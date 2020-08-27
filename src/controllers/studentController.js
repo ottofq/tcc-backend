@@ -152,7 +152,7 @@ class StudentController {
 
       return res.status(200).json({ total_students, students });
     } catch (error) {
-      return res.status(400).json(error);
+      return res.status(error.statusCode).json({ error: error.message });
     }
   }
 
