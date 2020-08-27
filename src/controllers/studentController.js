@@ -1,7 +1,7 @@
 const {
   createStudentService,
   listStudentsService,
-  listStudentService,
+  findStudentService,
 } = require('../services/studentServices');
 
 class StudentController {
@@ -135,7 +135,7 @@ class StudentController {
 
       return res.status(200).json(studentCreated);
     } catch (error) {
-      return res.status(400).json({ error: error.message });
+      return res.status(error.statusCode).json({ error: error.message });
     }
   }
 
@@ -160,10 +160,10 @@ class StudentController {
     const { id } = req.params;
 
     try {
-      const result = await listStudentService.handle(id);
-      return res.json(result);
+      const result = await findStudentService.handle(id);
+      return res.status(200).json(result);
     } catch (error) {
-      return res.status(400).json({ error: error.message });
+      return res.status(error.statusCode).json({ error: error.message });
     }
   }
 }
