@@ -4,7 +4,7 @@ const {
   updateMenuService,
   listMenusService,
   listLastMenuService,
-  listMenuService,
+  findMenuService,
 } = require('../services/menuServices');
 
 class MenuController {
@@ -35,7 +35,7 @@ class MenuController {
       const menuCreated = await createMenuService.handle(menu);
       return res.status(200).json(menuCreated);
     } catch (error) {
-      return res.status(400).json({ error: error.message });
+      return res.status(error.statusCode).json({ error: error.message });
     }
   }
 
@@ -44,7 +44,7 @@ class MenuController {
       const menu = await listLastMenuService.handle();
       return res.status(200).json(menu);
     } catch (error) {
-      return res.status(400).json({ error: error.message });
+      return res.status(error.statusCode).json({ error: error.message });
     }
   }
 
@@ -57,7 +57,7 @@ class MenuController {
 
       return res.status(200).json({ total_menus, menus });
     } catch (error) {
-      return res.status(400).json({ error: error.message });
+      return res.status(error.statusCode).json({ error: error.message });
     }
   }
 
@@ -65,10 +65,10 @@ class MenuController {
     const { id } = req.params;
 
     try {
-      const menu = await listMenuService.handle(id);
+      const menu = await findMenuService.handle(id);
       return res.status(200).json(menu);
     } catch (error) {
-      return res.status(400).json({ error: error.message });
+      return res.status(error.statusCode).json({ error: error.message });
     }
   }
 
@@ -79,7 +79,7 @@ class MenuController {
       const result = await deleteMenuService.handle(id);
       return res.status(200).json(result);
     } catch (error) {
-      return res.status(400).json({ error: error.message });
+      return res.status(error.statusCode).json({ error: error.message });
     }
   }
 
@@ -107,7 +107,7 @@ class MenuController {
       });
       return res.status(200).json(menuUpdated);
     } catch (error) {
-      return res.status(400).json({ error: error.message });
+      return res.status(error.statusCode).json({ error: error.message });
     }
   }
 }
