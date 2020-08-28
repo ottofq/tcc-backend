@@ -1,4 +1,6 @@
 const newsRepository = require('../../repositories/newsRepository');
+const InternalServerError = require('../../utils/errors/internalServerError');
+const NotFoundError = require('../../utils/errors/notFoundError');
 
 class FindNewsService {
   async handle(id) {
@@ -6,12 +8,15 @@ class FindNewsService {
       const news = await newsRepository.findById(id);
 
       if (!news) {
-        throw Error('news not found');
+        throw Error('News not found');
       }
 
       return news;
     } catch (error) {
-      throw Error(error.message);
+      if (error.name === 'DBError') {
+        throw new InternalServerError('Internal Server Error');
+      }
+      throw new NotFoundError(error.message);
     }
   }
 }

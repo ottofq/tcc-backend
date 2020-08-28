@@ -1,4 +1,5 @@
 const newsRepository = require('../../repositories/newsRepository');
+const InternalServerError = require('../../utils/errors/internalServerError');
 
 class ListNewsService {
   async handle(skip, limit) {
@@ -8,7 +9,7 @@ class ListNewsService {
 
       return { total_news, news };
     } catch (error) {
-      throw Error(error.message);
+      throw InternalServerError('Internal Server Error');
     }
   }
 }

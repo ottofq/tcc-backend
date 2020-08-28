@@ -1,18 +1,19 @@
 const newsRepository = require('../../repositories/newsRepository');
+const InternalServerError = require('../../utils/errors/internalServerError');
 
 class CreateNewsService {
-  async handle(news) {
+  async handle(title, description) {
     try {
-      const cleanDescription = news.descricao.replace(/(\r\n|\n|\r)/gm, '');
+      const cleanDescription = description.replace(/(\r\n|\n|\r)/gm, '');
 
       const newsCreated = await newsRepository.create({
-        titulo: news.titulo,
+        titulo: title,
         descricao: cleanDescription,
       });
 
       return newsCreated;
     } catch (error) {
-      throw Error(error.message);
+      throw new InternalServerError('Internal Server Error');
     }
   }
 }
