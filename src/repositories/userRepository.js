@@ -1,4 +1,5 @@
 const userModel = require('../models/userModel');
+const DBError = require('../utils/errors/dbError');
 
 class UserRepository {
   async create(user) {
@@ -7,7 +8,7 @@ class UserRepository {
 
       return userCreated;
     } catch (error) {
-      throw Error(error.message);
+      throw new DBError(error.message);
     }
   }
 
@@ -21,7 +22,7 @@ class UserRepository {
 
       return users;
     } catch (error) {
-      throw Error(error.message);
+      throw new DBError(error.message);
     }
   }
 
@@ -31,7 +32,7 @@ class UserRepository {
 
       return user;
     } catch (error) {
-      throw Error(error.message);
+      throw new DBError(error.message);
     }
   }
 
@@ -41,7 +42,7 @@ class UserRepository {
 
       return user;
     } catch (error) {
-      throw Error(error.message);
+      throw new DBError(error.message);
     }
   }
 
@@ -59,7 +60,7 @@ class UserRepository {
 
       return userUpdated;
     } catch (error) {
-      throw Error(error.message);
+      throw new DBError(error.message);
     }
   }
 
@@ -69,7 +70,7 @@ class UserRepository {
 
       return result;
     } catch (error) {
-      throw Error(error.message);
+      throw new DBError(error.message);
     }
   }
 }
