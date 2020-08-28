@@ -1,4 +1,5 @@
 const studentRepository = require('../../repositories/studentRepository');
+const InternalServerError = require('../../utils/errors/internalServerError');
 
 class PercentageGeneralRatingService {
   async handle() {
@@ -8,7 +9,7 @@ class PercentageGeneralRatingService {
 
       return { total_alunos: totalStudents, totais: generalRatings[0] };
     } catch (error) {
-      throw Error(error.message);
+      throw new InternalServerError('Internal Server Error');
     }
   }
 }

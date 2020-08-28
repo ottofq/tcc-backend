@@ -1,4 +1,5 @@
 const studentRepository = require('../../repositories/studentRepository');
+const InternalServerError = require('../../utils/errors/internalServerError');
 
 class CountPathologies {
   async handle() {
@@ -8,7 +9,7 @@ class CountPathologies {
 
       return { total_alunos: totalStudents, totais: patologiesCount[0] };
     } catch (error) {
-      throw Error(error.message);
+      throw new InternalServerError('Internal Server Error');
     }
   }
 }
