@@ -1,5 +1,6 @@
 const { ObjectId } = require('mongoose').Types;
 const ratingModel = require('../models/ratingModel');
+const DBError = require('../utils/errors/dbError');
 
 class RatingRepository {
   async create(menuId, student, rating, comments) {
@@ -25,7 +26,7 @@ class RatingRepository {
 
       return result;
     } catch (error) {
-      throw Error(error.message);
+      throw new DBError(error.message);
     }
   }
 
@@ -37,7 +38,7 @@ class RatingRepository {
 
       return ratingCollection;
     } catch (error) {
-      throw Error(error.message);
+      throw new DBError(error.message);
     }
   }
 
@@ -50,7 +51,7 @@ class RatingRepository {
 
       return studentRate;
     } catch (error) {
-      throw Error(error.message);
+      throw new DBError(error.message);
     }
   }
 
@@ -68,7 +69,7 @@ class RatingRepository {
 
       return result;
     } catch (error) {
-      throw Error(error.message);
+      throw new DBError(error.message);
     }
   }
 
@@ -93,7 +94,7 @@ class RatingRepository {
 
       return average;
     } catch (error) {
-      throw Error(error.message);
+      throw new DBError(error.message);
     }
   }
 
@@ -112,7 +113,7 @@ class RatingRepository {
       ]);
       return comments;
     } catch (error) {
-      throw Error(error.message);
+      throw new DBError(error.message);
     }
   }
 
@@ -121,7 +122,7 @@ class RatingRepository {
       const result = await ratingModel.deleteOne({ cardapio_id: menuId });
       return result;
     } catch (error) {
-      throw Error(error.message);
+      throw new DBError(error.message);
     }
   }
 }
