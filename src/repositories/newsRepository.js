@@ -1,4 +1,5 @@
 const newsModel = require('../models/newsModel');
+const DBError = require('../utils/errors/dbError');
 
 class NewsRepository {
   async create(news) {
@@ -7,7 +8,7 @@ class NewsRepository {
 
       return newsCreated;
     } catch (error) {
-      throw Error(error.message);
+      throw new DBError(error.message);
     }
   }
 
@@ -20,7 +21,7 @@ class NewsRepository {
         .sort({ _id: -1 });
       return news;
     } catch (error) {
-      throw Error(error.message);
+      throw new DBError(error.message);
     }
   }
 
@@ -30,7 +31,7 @@ class NewsRepository {
 
       return news;
     } catch (error) {
-      throw Error(error.message);
+      throw new DBError(error.message);
     }
   }
 
@@ -48,7 +49,7 @@ class NewsRepository {
 
       return newsUpdated;
     } catch (error) {
-      throw Error(error.message);
+      throw new DBError(error.message);
     }
   }
 
@@ -58,7 +59,7 @@ class NewsRepository {
 
       return result;
     } catch (error) {
-      throw Error(error.message);
+      throw new DBError(error.message);
     }
   }
 
@@ -68,7 +69,7 @@ class NewsRepository {
 
       return total_news;
     } catch (error) {
-      throw Error(error.message);
+      throw new DBError(error.message);
     }
   }
 }
