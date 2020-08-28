@@ -1,4 +1,5 @@
 const userRepository = require('../../repositories/userRepository');
+const InternalServerError = require('../../utils/errors/internalServerError');
 
 class ListUserService {
   async handle(skip, limit) {
@@ -10,7 +11,7 @@ class ListUserService {
 
       return users;
     } catch (error) {
-      throw new Error(error.message);
+      throw new InternalServerError(error.message);
     }
   }
 }

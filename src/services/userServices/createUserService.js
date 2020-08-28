@@ -1,5 +1,7 @@
 const userRepository = require('../../repositories/userRepository');
 const passwordUtils = require('../../utils/passwordUtils');
+const InternalServerError = require('../../utils/errors/internalServerError');
+const BadRequestError = require('../../utils/errors/badRequestError');
 
 class CreateUserService {
   async handle(user) {
@@ -24,7 +26,10 @@ class CreateUserService {
 
       return userCreated;
     } catch (error) {
-      throw new Error(error.message);
+      if (error.name === 'DBError') {
+        throw new InternalServerError('Internal Server Error');
+      }
+      throw new BadRequestError(error.message);
     }
   }
 }

@@ -1,5 +1,7 @@
 const userRepository = require('../../repositories/userRepository');
 const passwordUtils = require('../../utils/passwordUtils');
+const InternalServerError = require('../../utils/errors/internalServerError');
+const BadRequestError = require('../../utils/errors/badRequestError');
 
 class UpdateUserService {
   async handle(id, nome, oldPassword, newPassword) {
@@ -7,7 +9,7 @@ class UpdateUserService {
       const user = await userRepository.findById(id);
 
       if (!user) {
-        throw Error('Usuário não existe na base de dados!');
+        throw Error('Usuário não encontrado');
       }
 
       const password = await passwordUtils.comparePassword(
@@ -16,7 +18,7 @@ class UpdateUserService {
       );
 
       if (!password) {
-        throw Error('Senha incorreta!');
+        throw Error('Senha incorreta');
       }
 
       const hash_password = await passwordUtils.hashPassword(newPassword);
@@ -25,7 +27,10 @@ class UpdateUserService {
 
       return userUpdated;
     } catch (error) {
-      throw new Error(error.message);
+      if (error.name === 'DBError') {
+        throw new InternalServerError('Internal Server Error');
+      }
+      throw new BadRequestError(error.message);
     }
   }
 }
