@@ -19,7 +19,7 @@ class RatingController {
 
       return res.status(200).json(result);
     } catch (error) {
-      return res.status(400).json({ error: error.message });
+      return res.status(error.statusCode).json({ error: error.message });
     }
   }
 
@@ -29,7 +29,7 @@ class RatingController {
       const average = await averageMenuRatingService.handle(id);
       return res.status(200).json(average);
     } catch (error) {
-      return res.status(400).json({ error: error.message });
+      return res.status(error.statusCode).json({ error: error.message });
     }
   }
 
@@ -41,7 +41,7 @@ class RatingController {
 
       return res.status(200).json(comments);
     } catch (error) {
-      return res.status(400).json({ error: error.message });
+      return res.status(error.statusCode).json({ error: error.message });
     }
   }
 }
