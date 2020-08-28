@@ -11,9 +11,9 @@ class User {
 
     try {
       const user = await createUserService.handle({ nome, email, password });
-      return res.status(200).json(user);
+      return res.status(201).json(user);
     } catch (error) {
-      return res.status(409).json({ error: error.message });
+      return res.status(error.statusCode).json({ error: error.message });
     }
   }
 
@@ -24,7 +24,7 @@ class User {
 
       return res.status(200).json(users);
     } catch (error) {
-      return res.status(400).json({ error: error.message });
+      return res.status(error.statusCode).json({ error: error.message });
     }
   }
 
@@ -38,7 +38,7 @@ class User {
         .status(200)
         .json({ sucesso: 'Usuário atualizado com sucesso!' });
     } catch (error) {
-      return res.status(400).json({ error: error.message });
+      return res.status(error.statusCode).json({ error: error.message });
     }
   }
 
@@ -50,7 +50,7 @@ class User {
 
       return res.status(204).send();
     } catch (error) {
-      return res.status(404).json({ error: error.message });
+      return res.status(error.statusCode).json({ error: error.message });
     }
   }
 }
