@@ -1,10 +1,20 @@
 const ratingRepository = require('../../repositories/ratingRepository');
+const menuRepository = require('../../repositories/menuRepository');
+const NotFoundError = require('../../utils/errors/notFoundError');
+const InternalServerError = require('../../utils/errors/internalServerError');
 
 class ListCommentsMenuService {
   async handle(id, skip, limit) {
     try {
       const skipNumber = Number(skip);
       const limitNumber = Number(limit);
+
+      const menuExists = await menuRepository.findById(id);
+
+      if (!menuExists) {
+        throw Error('Menu not found');
+      }
+
       const comments = await ratingRepository.listCommentsMenu(
         id,
         skipNumber,
@@ -20,7 +30,10 @@ class ListCommentsMenuService {
         avaliacoes: validComments,
       };
     } catch (error) {
-      throw Error(error.message);
+      if (error.name === 'DBError') {
+        throw new InternalServerError('Internal Server Error');
+      }
+      throw new NotFoundError(error.message);
     }
   }
 }
