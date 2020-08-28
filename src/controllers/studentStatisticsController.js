@@ -20,7 +20,7 @@ class StudentStatisticsController {
 
       return res.status(200).json(allergies);
     } catch (error) {
-      return res.status(400).json({ error: error.message });
+      return res.status(error.statusCode).json({ error: error.message });
     }
   }
 
@@ -30,7 +30,7 @@ class StudentStatisticsController {
 
       return res.status(200).json(pathologies);
     } catch (error) {
-      return res.status(400).json({ error: error.message });
+      return res.status(error.statusCode).json({ error: error.message });
     }
   }
 
@@ -40,7 +40,7 @@ class StudentStatisticsController {
 
       return res.status(200).json(scholarships);
     } catch (error) {
-      return res.status(400).json({ error: error.message });
+      return res.status(error.statusCode).json({ error: error.message });
     }
   }
 
@@ -50,7 +50,7 @@ class StudentStatisticsController {
 
       return res.status(200).json(frequencyOfMeals);
     } catch (error) {
-      return res.status(400).json({ error: error.message });
+      return res.status(error.statusCode).json({ error: error.message });
     }
   }
 
@@ -60,7 +60,7 @@ class StudentStatisticsController {
 
       return res.status(200).json(typeOfMeals);
     } catch (error) {
-      return res.status(400).json({ error: error.message });
+      return res.status(error.statusCode).json({ error: error.message });
     }
   }
 
@@ -70,7 +70,7 @@ class StudentStatisticsController {
 
       return res.status(200).json(physicalLevel);
     } catch (error) {
-      return res.status(400).json({ error: error.message });
+      return res.status(error.statusCode).json({ error: error.message });
     }
   }
 
@@ -80,7 +80,7 @@ class StudentStatisticsController {
 
       return res.status(200).json(vegans);
     } catch (error) {
-      return res.status(400).json({ error: error.message });
+      return res.status(error.statusCode).json({ error: error.message });
     }
   }
 
@@ -90,7 +90,7 @@ class StudentStatisticsController {
 
       return res.status(200).json(alcoholConsumption);
     } catch (error) {
-      return res.status(400).json({ error: error.message });
+      return res.status(error.statusCode).json({ error: error.message });
     }
   }
 
@@ -100,7 +100,7 @@ class StudentStatisticsController {
 
       return res.status(200).json(smokers);
     } catch (error) {
-      return res.status(400).json({ error: error.message });
+      return res.status(error.statusCode).json({ error: error.message });
     }
   }
 
@@ -110,7 +110,7 @@ class StudentStatisticsController {
 
       return res.status(200).json(ratings);
     } catch (error) {
-      return res.status(400).json({ error: error.message });
+      return res.status(error.statusCode).json({ error: error.message });
     }
   }
 
@@ -120,7 +120,7 @@ class StudentStatisticsController {
 
       return res.status(200).json(generalRatings);
     } catch (error) {
-      return res.status(400).json({ error: error.message });
+      return res.status(error.statusCode).json({ error: error.message });
     }
   }
 
@@ -130,7 +130,7 @@ class StudentStatisticsController {
 
       return res.status(200).json(improvements);
     } catch (error) {
-      return res.status(400).json({ error: error.message });
+      return res.status(error.statusCode).json({ error: error.message });
     }
   }
 }
