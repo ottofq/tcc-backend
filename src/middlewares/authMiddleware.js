@@ -11,8 +11,7 @@ module.exports = async (req, res, next) => {
   const [, token] = auth.split(' ');
 
   try {
-    const result = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
-    console.log(result);
+    await promisify(jwt.verify)(token, process.env.JWT_SECRET);
 
     return next();
   } catch (error) {

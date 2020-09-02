@@ -16,7 +16,8 @@
   "rules": {
     "prettier/prettier": "error",
     "camelcase": "off",
-    "no-console": "off",
-    "class-methods-use-this": "off"
+    "no-console": "warn",
+    "class-methods-use-this": "off",
+    "no-underscore-dangle": "off"
   }
 }

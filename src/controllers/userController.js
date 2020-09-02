@@ -1,28 +1,30 @@
-const UserModel = require('../models/userModel');
-const passwordUtil = require('../utils/passwordUtils');
+const {
+  createUserService,
+  listUserService,
+  updateUserService,
+  deleteUserService,
+} = require('../services/userServices');
 
 class User {
   async create(req, res) {
     const { nome, email, password } = req.body;
 
-    const hash_password = await passwordUtil.hashPassword(password);
-    const user = { nome, email, hash_password };
-
     try {
-      const result = await UserModel.create(user);
-      result.hash_password = null;
-      return res.json(result);
+      const user = await createUserService.handle({ nome, email, password });
+      return res.status(201).json(user);
     } catch (error) {
-      return res.status(400).json(error);
+      return res.status(error.statusCode).json({ error: error.message });
     }
   }
 
-  async read(req, res) {
+  async list(req, res) {
+    const { skip, limit } = req.query;
     try {
-      const result = await UserModel.find();
-      return res.json(result);
+      const users = await listUserService.handle(skip, limit);
+
+      return res.status(200).json(users);
     } catch (error) {
-      return res.status(400).json(error);
+      return res.status(error.statusCode).json({ error: error.message });
     }
   }
 
@@ -30,33 +32,13 @@ class User {
     const { nome, oldPassword, newPassword } = req.body;
     const { id } = req.params;
 
-    const user = await UserModel.findById({ _id: id }).select('+hash_password');
-
-    if (!user) {
-      return res.status(400).json({ error: 'usuário não encontrado!' });
-    }
-
-    const password = await passwordUtil.comparePassword(
-      oldPassword,
-      user.hash_password
-    );
-
-    if (!password) {
-      return res.status(401).json({ error: 'Senha incorreta!' });
-    }
-
     try {
-      const hash_password = await passwordUtil.hashPassword(newPassword);
-      const result = await UserModel.updateOne(
-        { _id: id },
-        {
-          nome,
-          hash_password,
-        }
-      );
-      return res.json(result);
+      await updateUserService.handle(id, nome, oldPassword, newPassword);
+      return res
+        .status(200)
+        .json({ sucesso: 'Usuário atualizado com sucesso!' });
     } catch (error) {
-      return res.status(400).json(error);
+      return res.status(error.statusCode).json({ error: error.message });
     }
   }
 
@@ -64,11 +46,11 @@ class User {
     const { id } = req.params;
 
     try {
-      const result = await UserModel.deleteOne({ _id: id });
+      await deleteUserService.handle(id);
 
-      return res.json(result);
+      return res.status(204).send();
     } catch (error) {
-      return res.status(400).json(error);
+      return res.status(error.statusCode).json({ error: error.message });
     }
   }
 }

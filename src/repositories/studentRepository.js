@@ -1,170 +1,128 @@
-const alunoModel = require('../models/alunoModel');
+const studentModel = require('../models/studentModel');
+const DBError = require('../utils/errors/dbError');
 
-class AlunoController {
-  async create(req, res) {
-    const {
-      nome,
-      matricula,
-      data_nascimento,
-      curso,
-      ano_ingresso,
-      sexo,
-      bolsista,
-      frequencia_RU,
-      tipo_refeicao_RU,
-      nivel_fisico,
-      peso_ideal,
-      alergias: {
-        nenhuma,
-        alergia_gluten,
-        intolerancia_lactose,
-        proteina_leite_vaca,
-        outras_alergias,
-      },
-      vegano_vegetariano,
-      adiciona_sal,
-      utiliza_oleo_composto,
-      consome_bebida_alcoolica,
-      frequencia_alcool,
-      tabagista,
-      patologias: {
-        doenca_cardiovascular,
-        hipertensao_arterial,
-        obesidade,
-        dislipidemias,
-        doenca_arterial_coronariana,
-        diabetes,
-        outras_patologias,
-      },
-      patologias_familia: {
-        fam_doenca_cardiovascular,
-        fam_hipertensao,
-        fam_obesidade,
-        fam_dislipidemias,
-        fam_doenca_arterial_coronariana,
-        fam_diabetes,
-        patologias_familia_outras,
-      },
-      medicamento_continuo,
-      avaliacao_RU: {
-        aroma,
-        coloracao_cardapio,
-        textura_preparacao,
-        sabor_preparacao,
-        avaliacao_geral,
-      },
-      melhorias_RU: {
-        cardapio,
-        melhoria_sabor_preparacao,
-        opcao_vegetariana,
-        estrutura_fisica,
-        tempo_fila,
-        preco_ticket,
-        melhoria_outros,
-      },
-    } = req.body;
-
-    const aluno = {
-      nome,
-      matricula,
-      data_nascimento,
-      curso,
-      ano_ingresso,
-      sexo,
-      bolsista,
-      frequencia_RU,
-      tipo_refeicao_RU,
-      nivel_fisico,
-      peso_ideal,
-      alergias: {
-        nenhuma,
-        alergia_gluten,
-        intolerancia_lactose,
-        proteina_leite_vaca,
-        outras_alergias,
-      },
-      vegano_vegetariano,
-      adiciona_sal,
-      utiliza_oleo_composto,
-      consome_bebida_alcoolica,
-      frequencia_alcool,
-      tabagista,
-      patologias: {
-        doenca_cardiovascular,
-        hipertensao_arterial,
-        obesidade,
-        dislipidemias,
-        doenca_arterial_coronariana,
-        diabetes,
-        outras_patologias,
-      },
-      patologias_familia: {
-        fam_doenca_cardiovascular,
-        fam_hipertensao,
-        fam_obesidade,
-        fam_dislipidemias,
-        fam_doenca_arterial_coronariana,
-        fam_diabetes,
-        patologias_familia_outras,
-      },
-      medicamento_continuo,
-      avaliacao_RU: {
-        aroma,
-        coloracao_cardapio,
-        textura_preparacao,
-        sabor_preparacao,
-        avaliacao_geral,
-      },
-      melhorias_RU: {
-        cardapio,
-        melhoria_sabor_preparacao,
-        opcao_vegetariana,
-        estrutura_fisica,
-        tempo_fila,
-        preco_ticket,
-        melhoria_outros,
-      },
-    };
-
+class StudentRepository {
+  async create(student) {
     try {
-      const result = await alunoModel.create(aluno);
-      return res.json(result);
+      const studentCreated = await studentModel.create(student);
+      return studentCreated;
     } catch (error) {
-      return res.status(400).json(error);
+      throw new DBError(error.message);
     }
   }
 
-  async readAll(req, res) {
+  async findById(id) {
     try {
-      const { page } = req.query;
-      const skips = 8 * (page - 1);
-      const total_alunos = await alunoModel.countDocuments();
-      const result = await alunoModel
+      const student = await studentModel.findById(id);
+      return student;
+    } catch (error) {
+      throw new DBError(error.message);
+    }
+  }
+
+  async findByRegistration(registrationID) {
+    try {
+      const student = await studentModel.findOne({ matricula: registrationID });
+      return student;
+    } catch (error) {
+      throw new DBError(error.message);
+    }
+  }
+
+  async list(skip, limit) {
+    try {
+      const students = await studentModel
         .find()
-        .skip(skips)
-        .limit(8)
+        .skip(skip)
+        .limit(limit)
         .sort({ _id: -1 });
-      return res.json({ total_alunos, result });
+
+      return students;
     } catch (error) {
-      return res.status(400).json(error);
+      throw new DBError(error.message);
     }
   }
 
-  async readOne(req, res) {
-    const { id } = req.params;
-
+  async countStudents() {
     try {
-      const result = await alunoModel.findById({ _id: id });
-      return res.json(result);
+      const total_students = await studentModel.countDocuments();
+
+      return total_students;
     } catch (error) {
-      return res.status(400).json({ error: 'Aluno não encontrado' });
+      throw new DBError(error.message);
     }
   }
 
-  async porcetagemAlergia(req, res) {
+  async countAllergies() {
     try {
-      const total_alunos = await alunoModel.countDocuments();
-      const result = await alunoModel.aggregate([
+      const allergiesCount = await studentModel.aggregate([
+        {
+          $facet: {
+            nenhuma: [
+              {
+                $match: {
+                  $and: [
+                    { 'alergias.alergia_gluten': { $eq: false } },
+                    { 'alergias.intolerancia_lactose': { $eq: false } },
+                    { 'alergias.proteina_leite_vaca': { $eq: false } },
+                    { 'alergias.outras_alergias': { $exists: false } },
+                  ],
+                },
+              },
+              { $count: 'nenhuma' },
+            ],
+            alergia_gluten: [
+              { $match: { 'alergias.alergia_gluten': { $eq: true } } },
+              { $count: 'alergia_gluten' },
+            ],
+            intolerancia_lactose: [
+              { $match: { 'alergias.intolerancia_lactose': { $eq: true } } },
+              { $count: 'intolerancia_lactose' },
+            ],
+            proteina_leite_vaca: [
+              { $match: { 'alergias.proteina_leite_vaca': { $eq: true } } },
+              { $count: 'proteina_leite_vaca' },
+            ],
+            outras_alergias: [
+              { $match: { 'alergias.outras_alergias': { $exists: true } } },
+              { $count: 'outras_alergias' },
+            ],
+          },
+        },
+        {
+          $project: {
+            nenhuma_alergia: {
+              $arrayElemAt: ['$nenhuma.nenhuma', 0],
+            },
+            alergia_gluten: {
+              $arrayElemAt: ['$alergia_gluten.alergia_gluten', 0],
+            },
+            intolerancia_lactose: {
+              $arrayElemAt: ['$intolerancia_lactose.intolerancia_lactose', 0],
+            },
+            proteina_leite_vaca: {
+              $arrayElemAt: ['$proteina_leite_vaca.proteina_leite_vaca', 0],
+            },
+            outras_alergias: {
+              $arrayElemAt: ['$outras_alergias.outras_alergias', 0],
+            },
+          },
+        },
+      ]);
+
+      return allergiesCount;
+    } catch (error) {
+      throw new DBError(error.message);
+    }
+  }
+
+  async percentageAllergies() {
+    try {
+      const totalStudents = await studentModel.countDocuments();
+
+      const multiplicationFactor = 100 / totalStudents;
+
+      const percentageAllergies = await studentModel.aggregate([
         {
           $facet: {
             nenhuma: [
@@ -195,13 +153,13 @@ class AlunoController {
             nenhuma_alergia: {
               $multiply: [
                 { $arrayElemAt: ['$nenhuma.nenhuma', 0] },
-                100 / total_alunos,
+                multiplicationFactor,
               ],
             },
             alergia_gluten: {
               $multiply: [
                 { $arrayElemAt: ['$alergia_gluten.alergia_gluten', 0] },
-                100 / total_alunos,
+                multiplicationFactor,
               ],
             },
             intolerancia_lactose: {
@@ -212,7 +170,7 @@ class AlunoController {
                     0,
                   ],
                 },
-                100 / total_alunos,
+                multiplicationFactor,
               ],
             },
             proteina_leite_vaca: {
@@ -220,7 +178,7 @@ class AlunoController {
                 {
                   $arrayElemAt: ['$proteina_leite_vaca.proteina_leite_vaca', 0],
                 },
-                100 / total_alunos,
+                multiplicationFactor,
               ],
             },
             outras_alergias: {
@@ -228,78 +186,21 @@ class AlunoController {
                 {
                   $arrayElemAt: ['$outras_alergias.outras_alergias', 0],
                 },
-                100 / total_alunos,
+                multiplicationFactor,
               ],
             },
           },
         },
       ]);
-      return res.json({ total_alunos, porcentagem: result[0] });
+      return percentageAllergies;
     } catch (error) {
-      return res.status(400).json({ error });
+      throw new DBError(error.message);
     }
   }
 
-  async countAlergias(req, res) {
+  async countPathologies() {
     try {
-      const total_alunos = await alunoModel.countDocuments();
-      const result = await alunoModel.aggregate([
-        {
-          $facet: {
-            nenhuma: [
-              { $match: { 'alergias.nenhuma': { $eq: true } } },
-              { $count: 'nenhuma' },
-            ],
-            alergia_gluten: [
-              { $match: { 'alergias.alergia_gluten': { $eq: true } } },
-              { $count: 'alergia_gluten' },
-            ],
-            intolerancia_lactose: [
-              { $match: { 'alergias.intolerancia_lactose': { $eq: true } } },
-              { $count: 'intolerancia_lactose' },
-            ],
-            proteina_leite_vaca: [
-              { $match: { 'alergias.proteina_leite_vaca': { $eq: true } } },
-              { $count: 'proteina_leite_vaca' },
-            ],
-            outras_alergias: [
-              { $match: { 'alergias.outras_alergias': { $exists: 1 } } },
-              { $count: 'outras_alergias' },
-            ],
-          },
-        },
-        {
-          $project: {
-            nenhuma_alergia: {
-              $multiply: { $arrayElemAt: ['$nenhuma.nenhuma', 0] },
-            },
-            alergia_gluten: {
-              $multiply: {
-                $arrayElemAt: ['$alergia_gluten.alergia_gluten', 0],
-              },
-            },
-            intolerancia_lactose: {
-              $arrayElemAt: ['$intolerancia_lactose.intolerancia_lactose', 0],
-            },
-            proteina_leite_vaca: {
-              $arrayElemAt: ['$proteina_leite_vaca.proteina_leite_vaca', 0],
-            },
-            outras_alergias: {
-              $arrayElemAt: ['$outras_alergias.outras_alergias', 0],
-            },
-          },
-        },
-      ]);
-      return res.json({ total_alunos, totais: result[0] });
-    } catch (error) {
-      return res.status(400).json({ error });
-    }
-  }
-
-  async countPatologias(req, res) {
-    try {
-      const total_alunos = await alunoModel.countDocuments();
-      const result = await alunoModel.aggregate([
+      const countPatologies = await studentModel.aggregate([
         {
           $facet: {
             doenca_cardiovascular: [
@@ -373,16 +274,20 @@ class AlunoController {
           },
         },
       ]);
-      return res.json({ total_alunos, totais: result[0] });
+
+      return countPatologies;
     } catch (error) {
-      return res.status(400).json({ error });
+      throw new DBError(error.message);
     }
   }
 
-  async porcetagemPatologia(req, res) {
+  async percentagePathologies() {
     try {
-      const total_alunos = await alunoModel.countDocuments();
-      const result = await alunoModel.aggregate([
+      const totalStudents = await studentModel.countDocuments();
+
+      const multiplicationFactor = 100 / totalStudents;
+
+      const percentagePathologies = await studentModel.aggregate([
         {
           $facet: {
             doenca_cardiovascular: [
@@ -437,7 +342,7 @@ class AlunoController {
                     0,
                   ],
                 },
-                100 / total_alunos,
+                multiplicationFactor,
               ],
             },
             hipertensao_arterial: {
@@ -448,7 +353,7 @@ class AlunoController {
                     0,
                   ],
                 },
-                100 / total_alunos,
+                multiplicationFactor,
               ],
             },
             obesidade: {
@@ -456,7 +361,7 @@ class AlunoController {
                 {
                   $arrayElemAt: ['$obesidade.obesidade', 0],
                 },
-                100 / total_alunos,
+                multiplicationFactor,
               ],
             },
             dislipidemias: {
@@ -464,7 +369,7 @@ class AlunoController {
                 {
                   $arrayElemAt: ['$dislipidemias.dislipidemias', 0],
                 },
-                100 / total_alunos,
+                multiplicationFactor,
               ],
             },
             doenca_arterial_coronariana: {
@@ -475,7 +380,7 @@ class AlunoController {
                     0,
                   ],
                 },
-                100 / total_alunos,
+                multiplicationFactor,
               ],
             },
             diabetes: {
@@ -483,7 +388,7 @@ class AlunoController {
                 {
                   $arrayElemAt: ['$diabetes.diabetes', 0],
                 },
-                100 / total_alunos,
+                multiplicationFactor,
               ],
             },
             outras_patologias: {
@@ -491,22 +396,26 @@ class AlunoController {
                 {
                   $arrayElemAt: ['$outras_patologias.outras_patologias', 0],
                 },
-                100 / total_alunos,
+                multiplicationFactor,
               ],
             },
           },
         },
       ]);
-      return res.json({ total_alunos, porcentagem: result[0] });
+
+      return percentagePathologies;
     } catch (error) {
-      return res.status(400).json({ error });
+      throw new DBError(error.message);
     }
   }
 
-  async porcentagemBolsista(req, res) {
+  async percentageScholarship() {
     try {
-      const total_alunos = await alunoModel.countDocuments();
-      const result = await alunoModel.aggregate([
+      const totalStudents = await studentModel.countDocuments();
+
+      const multiplicationFactor = 100 / totalStudents;
+
+      const percentageScholarship = await studentModel.aggregate([
         {
           $facet: {
             bolsa_integral: [
@@ -532,7 +441,7 @@ class AlunoController {
                 {
                   $arrayElemAt: ['$bolsa_integral.bolsa_integral', 0],
                 },
-                100 / total_alunos,
+                multiplicationFactor,
               ],
             },
             bolsa_parcial: {
@@ -540,7 +449,7 @@ class AlunoController {
                 {
                   $arrayElemAt: ['$bolsa_parcial.bolsa_parcial', 0],
                 },
-                100 / total_alunos,
+                multiplicationFactor,
               ],
             },
             nao_bolsista: {
@@ -548,22 +457,26 @@ class AlunoController {
                 {
                   $arrayElemAt: ['$nao_bolsista.nao_bolsista', 0],
                 },
-                100 / total_alunos,
+                multiplicationFactor,
               ],
             },
           },
         },
       ]);
-      return res.json({ total_alunos, porcentagem: result[0] });
+
+      return percentageScholarship;
     } catch (error) {
-      return res.status(400).json({ error });
+      throw new DBError(error.message);
     }
   }
 
-  async porcentagemFrequenciaRU(req, res) {
+  async percentageFrequencyMeals() {
     try {
-      const total_alunos = await alunoModel.countDocuments();
-      const result = await alunoModel.aggregate([
+      const totalStudents = await studentModel.countDocuments();
+
+      const multiplicationFactor = 100 / totalStudents;
+
+      const frequencyMeals = await studentModel.aggregate([
         {
           $facet: {
             todo_dia: [
@@ -603,7 +516,7 @@ class AlunoController {
                 {
                   $arrayElemAt: ['$todo_dia.todo_dia', 0],
                 },
-                100 / total_alunos,
+                multiplicationFactor,
               ],
             },
             semana_3vezes: {
@@ -611,7 +524,7 @@ class AlunoController {
                 {
                   $arrayElemAt: ['$semana_3vezes.semana_3vezes', 0],
                 },
-                100 / total_alunos,
+                multiplicationFactor,
               ],
             },
             semana_1vez: {
@@ -619,7 +532,7 @@ class AlunoController {
                 {
                   $arrayElemAt: ['$semana_1vez.semana_1vez', 0],
                 },
-                100 / total_alunos,
+                multiplicationFactor,
               ],
             },
             raramente: {
@@ -627,22 +540,26 @@ class AlunoController {
                 {
                   $arrayElemAt: ['$raramente.raramente', 0],
                 },
-                100 / total_alunos,
+                multiplicationFactor,
               ],
             },
           },
         },
       ]);
-      return res.json({ total_alunos, porcentagem: result[0] });
+
+      return frequencyMeals;
     } catch (error) {
-      return res.status(400).json({ error });
+      throw new DBError(error.message);
     }
   }
 
-  async porcentagemTipoRefeicaoRU(req, res) {
+  async percentageTypeOfMeals() {
     try {
-      const total_alunos = await alunoModel.countDocuments();
-      const result = await alunoModel.aggregate([
+      const totalStudents = await studentModel.countDocuments();
+
+      const multiplicationFactor = 100 / totalStudents;
+
+      const percentageTypeOfMeals = await studentModel.aggregate([
         {
           $facet: {
             almoco: [
@@ -674,7 +591,7 @@ class AlunoController {
                 {
                   $arrayElemAt: ['$almoco.almoco', 0],
                 },
-                100 / total_alunos,
+                multiplicationFactor,
               ],
             },
             jantar: {
@@ -682,7 +599,7 @@ class AlunoController {
                 {
                   $arrayElemAt: ['$jantar.jantar', 0],
                 },
-                100 / total_alunos,
+                multiplicationFactor,
               ],
             },
             almoco_jantar: {
@@ -690,22 +607,26 @@ class AlunoController {
                 {
                   $arrayElemAt: ['$almoco_jantar.almoco_jantar', 0],
                 },
-                100 / total_alunos,
+                multiplicationFactor,
               ],
             },
           },
         },
       ]);
-      return res.json({ total_alunos, porcentagem: result[0] });
+
+      return percentageTypeOfMeals;
     } catch (error) {
-      return res.status(400).json({ error });
+      throw new DBError(error.message);
     }
   }
 
-  async porcentagemNivelAtividadeFisica(req, res) {
+  async percentagePhysicalActivityLevel() {
     try {
-      const total_alunos = await alunoModel.countDocuments();
-      const result = await alunoModel.aggregate([
+      const totalStudents = await studentModel.countDocuments();
+
+      const multiplicationFactor = 100 / totalStudents;
+
+      const physicalLevel = await studentModel.aggregate([
         {
           $facet: {
             sedentario: [
@@ -745,7 +666,7 @@ class AlunoController {
                 {
                   $arrayElemAt: ['$sedentario.sedentario', 0],
                 },
-                100 / total_alunos,
+                multiplicationFactor,
               ],
             },
             leve: {
@@ -753,7 +674,7 @@ class AlunoController {
                 {
                   $arrayElemAt: ['$leve.leve', 0],
                 },
-                100 / total_alunos,
+                multiplicationFactor,
               ],
             },
             moderado: {
@@ -761,7 +682,7 @@ class AlunoController {
                 {
                   $arrayElemAt: ['$moderado.moderado', 0],
                 },
-                100 / total_alunos,
+                multiplicationFactor,
               ],
             },
             ativo: {
@@ -769,22 +690,26 @@ class AlunoController {
                 {
                   $arrayElemAt: ['$ativo.ativo', 0],
                 },
-                100 / total_alunos,
+                multiplicationFactor,
               ],
             },
           },
         },
       ]);
-      return res.json({ total_alunos, porcentagem: result[0] });
+
+      return physicalLevel;
     } catch (error) {
-      return res.status(400).json({ error });
+      throw new DBError(error.message);
     }
   }
 
-  async porcentagemVeganoVegetariano(req, res) {
+  async percentageVegans() {
     try {
-      const total_alunos = await alunoModel.countDocuments();
-      const result = await alunoModel.aggregate([
+      const totalStudents = await studentModel.countDocuments();
+
+      const multiplicationFactor = 100 / totalStudents;
+
+      const vegans = await studentModel.aggregate([
         {
           $facet: {
             ovolactovegetariano: [
@@ -828,7 +753,7 @@ class AlunoController {
                 {
                   $arrayElemAt: ['$ovolactovegetariano.ovolactovegetariano', 0],
                 },
-                100 / total_alunos,
+                multiplicationFactor,
               ],
             },
             vegetariano_restrito: {
@@ -839,7 +764,7 @@ class AlunoController {
                     0,
                   ],
                 },
-                100 / total_alunos,
+                multiplicationFactor,
               ],
             },
             vegano: {
@@ -847,7 +772,7 @@ class AlunoController {
                 {
                   $arrayElemAt: ['$vegano.vegano', 0],
                 },
-                100 / total_alunos,
+                multiplicationFactor,
               ],
             },
             nao_vegano: {
@@ -855,22 +780,26 @@ class AlunoController {
                 {
                   $arrayElemAt: ['$nao_vegano.nao_vegano', 0],
                 },
-                100 / total_alunos,
+                multiplicationFactor,
               ],
             },
           },
         },
       ]);
-      return res.json({ total_alunos, porcentagem: result[0] });
+
+      return vegans;
     } catch (error) {
-      return res.status(400).json({ error });
+      throw new DBError(error.message);
     }
   }
 
-  async porcentagemConsumoBebidaAlcoolica(req, res) {
+  async percentageAlcoholConsumption() {
     try {
-      const total_alunos = await alunoModel.countDocuments();
-      const result = await alunoModel.aggregate([
+      const totalStudents = await studentModel.countDocuments();
+
+      const multiplicationFactor = 100 / totalStudents;
+
+      const alcoholConsumption = await studentModel.aggregate([
         {
           $facet: {
             diariamente: [
@@ -928,7 +857,7 @@ class AlunoController {
                 {
                   $arrayElemAt: ['$diariamente.diariamente', 0],
                 },
-                100 / total_alunos,
+                multiplicationFactor,
               ],
             },
             semana_3vezes: {
@@ -936,7 +865,7 @@ class AlunoController {
                 {
                   $arrayElemAt: ['$semana_3vezes.semana_3vezes', 0],
                 },
-                100 / total_alunos,
+                multiplicationFactor,
               ],
             },
             semana_1vez: {
@@ -944,7 +873,7 @@ class AlunoController {
                 {
                   $arrayElemAt: ['$semana_1vez.semana_1vez', 0],
                 },
-                100 / total_alunos,
+                multiplicationFactor,
               ],
             },
             raramente: {
@@ -952,7 +881,7 @@ class AlunoController {
                 {
                   $arrayElemAt: ['$raramente.raramente', 0],
                 },
-                100 / total_alunos,
+                multiplicationFactor,
               ],
             },
             nao_consome: {
@@ -960,22 +889,26 @@ class AlunoController {
                 {
                   $arrayElemAt: ['$nao_consome.nao_consome', 0],
                 },
-                100 / total_alunos,
+                multiplicationFactor,
               ],
             },
           },
         },
       ]);
-      return res.json({ total_alunos, porcentagem: result[0] });
+
+      return alcoholConsumption;
     } catch (error) {
-      return res.status(400).json({ error });
+      throw new DBError(error.message);
     }
   }
 
-  async porcentagemTabagista(req, res) {
+  async percentageSmoker() {
     try {
-      const total_alunos = await alunoModel.countDocuments();
-      const result = await alunoModel.aggregate([
+      const totalStudents = await studentModel.countDocuments();
+
+      const multiplicationFactor = 100 / totalStudents;
+
+      const smokers = await studentModel.aggregate([
         {
           $facet: {
             tabagista: [
@@ -1005,7 +938,7 @@ class AlunoController {
                 {
                   $arrayElemAt: ['$tabagista.tabagista', 0],
                 },
-                100 / total_alunos,
+                multiplicationFactor,
               ],
             },
             nao_tabagista: {
@@ -1013,31 +946,34 @@ class AlunoController {
                 {
                   $arrayElemAt: ['$nao_tabagista.nao_tabagista', 0],
                 },
-                100 / total_alunos,
+                multiplicationFactor,
               ],
             },
           },
         },
       ]);
-      return res.json({ total_alunos, porcentagem: result[0] });
+
+      return smokers;
     } catch (error) {
-      return res.status(400).json({ error });
+      throw new DBError(error.message);
     }
   }
 
-  async porcentagemAvaliacao(req, res) {
+  async percentageRatingMeals() {
     try {
-      const avaliacoes = [
+      const totalStudents = await studentModel.countDocuments();
+
+      const multiplicationFactor = 100 / totalStudents;
+
+      const ratingsParams = [
         'avaliacao_RU.aroma',
         'avaliacao_RU.coloracao_cardapio',
         'avaliacao_RU.textura_preparacao',
         'avaliacao_RU.sabor_preparacao',
       ];
 
-      const total_alunos = await alunoModel.countDocuments();
-
-      const result = avaliacoes.map(item =>
-        alunoModel.aggregate([
+      const ratings = ratingsParams.map(item =>
+        studentModel.aggregate([
           {
             $facet: {
               muito_bom: [
@@ -1097,7 +1033,7 @@ class AlunoController {
                   {
                     $arrayElemAt: ['$muito_bom.muito_bom', 0],
                   },
-                  100 / total_alunos,
+                  multiplicationFactor,
                 ],
               },
               bom: {
@@ -1105,7 +1041,7 @@ class AlunoController {
                   {
                     $arrayElemAt: ['$bom.bom', 0],
                   },
-                  100 / total_alunos,
+                  multiplicationFactor,
                 ],
               },
               regular: {
@@ -1113,7 +1049,7 @@ class AlunoController {
                   {
                     $arrayElemAt: ['$regular.regular', 0],
                   },
-                  100 / total_alunos,
+                  multiplicationFactor,
                 ],
               },
               ruim: {
@@ -1121,7 +1057,7 @@ class AlunoController {
                   {
                     $arrayElemAt: ['$ruim.ruim', 0],
                   },
-                  100 / total_alunos,
+                  multiplicationFactor,
                 ],
               },
               muito_ruim: {
@@ -1129,7 +1065,7 @@ class AlunoController {
                   {
                     $arrayElemAt: ['$muito_ruim.muito_ruim', 0],
                   },
-                  100 / total_alunos,
+                  multiplicationFactor,
                 ],
               },
             },
@@ -1142,27 +1078,21 @@ class AlunoController {
         coloracao_cardapio,
         textura_preparacao,
         sabor,
-      ] = await Promise.all(result);
+      ] = await Promise.all(ratings);
 
-      return res.json({
-        total_alunos,
-        porcentagem: {
-          aroma: aroma[0],
-          coloracao_cardapio: coloracao_cardapio[0],
-          textura_preparacao: textura_preparacao[0],
-          sabor: sabor[0],
-        },
-      });
+      return { aroma, coloracao_cardapio, textura_preparacao, sabor };
     } catch (error) {
-      return res.status(400).json({ error });
+      throw new DBError(error.message);
     }
   }
 
-  async porcentagemAvaliacaoGeral(req, res) {
+  async percentageGeneralRating() {
     try {
-      const total_alunos = await alunoModel.countDocuments();
+      const totalStudents = await studentModel.countDocuments();
 
-      const result = await alunoModel.aggregate([
+      const multiplicationFactor = 100 / totalStudents;
+
+      const generalRatings = await studentModel.aggregate([
         {
           $facet: {
             muito_bom: [
@@ -1222,7 +1152,7 @@ class AlunoController {
                 {
                   $arrayElemAt: ['$muito_bom.muito_bom', 0],
                 },
-                100 / total_alunos,
+                multiplicationFactor,
               ],
             },
             bom: {
@@ -1230,7 +1160,7 @@ class AlunoController {
                 {
                   $arrayElemAt: ['$bom.bom', 0],
                 },
-                100 / total_alunos,
+                multiplicationFactor,
               ],
             },
             regular: {
@@ -1238,7 +1168,7 @@ class AlunoController {
                 {
                   $arrayElemAt: ['$regular.regular', 0],
                 },
-                100 / total_alunos,
+                multiplicationFactor,
               ],
             },
             ruim: {
@@ -1246,7 +1176,7 @@ class AlunoController {
                 {
                   $arrayElemAt: ['$ruim.ruim', 0],
                 },
-                100 / total_alunos,
+                multiplicationFactor,
               ],
             },
             muito_ruim: {
@@ -1254,26 +1184,22 @@ class AlunoController {
                 {
                   $arrayElemAt: ['$muito_ruim.muito_ruim', 0],
                 },
-                100 / total_alunos,
+                multiplicationFactor,
               ],
             },
           },
         },
       ]);
 
-      return res.json({
-        total_alunos,
-        porcentagem: result[0],
-      });
+      return generalRatings;
     } catch (error) {
-      return res.status(400).json({ error });
+      throw new DBError(error.message);
     }
   }
 
-  async countMelhoriaRU(req, res) {
+  async countURImprovements() {
     try {
-      const total_alunos = await alunoModel.countDocuments();
-      const result = await alunoModel.aggregate([
+      const improvements = await studentModel.aggregate([
         {
           $facet: {
             cardapio: [
@@ -1352,10 +1278,12 @@ class AlunoController {
           },
         },
       ]);
-      return res.json({ total_alunos, totais: result[0] });
+
+      return improvements;
     } catch (error) {
-      return res.status(400).json({ error });
+      throw new DBError(error.message);
     }
   }
 }
-module.exports = new AlunoController();
+
+module.exports = new StudentRepository();

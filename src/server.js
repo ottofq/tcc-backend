@@ -1,15 +1,13 @@
 require('dotenv').config();
-const mongoose = require('mongoose');
+require('./database/mongo');
+require('./database/redis');
+const { errors } = require('celebrate');
 
 const app = require('./app');
 
-mongoose.connect(process.env.MONGO_URL, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-  useCreateIndex: true,
-});
+app.use(errors());
 
 app.listen(process.env.PORT, () => {
   // eslint-disable-next-line no-console
-  console.log(`Rodando na porta ${process.env.PORT}`);
+  console.log(`🏃 Running in port ${process.env.PORT}`);
 });
