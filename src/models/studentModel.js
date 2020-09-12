@@ -5,6 +5,16 @@ const studentSchema = new Schema({
     type: String,
     required: true,
   },
+  email: {
+    type: String,
+    required: true,
+    unique: true,
+  },
+  hash_password: {
+    type: String,
+    required: true,
+    select: false,
+  },
   matricula: {
     type: Number,
     required: true,
