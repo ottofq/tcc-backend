@@ -1,9 +1,13 @@
 const createStudentService = require('./createStudentService');
-const findStudentService = require('./findStudentService');
+const findByIdStudentService = require('./findByIdStudentService');
+const findEmailStudentService = require('./findEmailStudentService');
+const findByRegistrationStudentService = require('./findByRegistrationStudentService');
 const listStudentsService = require('./listStudentsService');
 
 module.exports = {
   createStudentService,
-  findStudentService,
+  findByIdStudentService,
+  findEmailStudentService,
+  findByRegistrationStudentService,
   listStudentsService,
 };
