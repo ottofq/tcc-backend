@@ -2,12 +2,16 @@ const {
   createStudentService,
   listStudentsService,
   findStudentService,
+  findByRegistrationStudentService,
+  findEmailStudentService,
 } = require('../services/studentServices');
 
 class StudentController {
   async create(req, res) {
     const {
       nome,
+      email,
+      password,
       matricula,
       data_nascimento,
       curso,
@@ -70,6 +74,8 @@ class StudentController {
 
     const student = {
       nome,
+      email,
+      password,
       matricula,
       data_nascimento,
       curso,
