@@ -29,6 +29,15 @@ class StudentRepository {
     }
   }
 
+  async findByEmail(email) {
+    try {
+      const student = await studentModel.findOne({ email });
+      return student;
+    } catch (error) {
+      throw new DBError(error.message);
+    }
+  }
+
   async list(skip, limit) {
     try {
       const students = await studentModel
