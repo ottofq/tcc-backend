@@ -166,5 +166,27 @@ class StudentController {
       return res.status(error.statusCode).json({ error: error.message });
     }
   }
+
+  async findByEmail(req, res) {
+    const { email } = req.params;
+
+    try {
+      const student = await findEmailStudentService.handle(email);
+      return res.status(200).json(student);
+    } catch (error) {
+      return res.status(error.statusCode).json({ error: error.message });
+    }
+  }
+
+  async findByRegistation(req, res) {
+    const { matricula } = req.params;
+
+    try {
+      const student = await findByRegistrationStudentService.handle(matricula);
+      return res.status(200).json(student);
+    } catch (error) {
+      return res.status(error.statusCode).json({ error: error.message });
+    }
+  }
 }
 module.exports = new StudentController();
