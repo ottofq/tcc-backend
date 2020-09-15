@@ -1,13 +1,13 @@
 const ratingRepository = require('../../repositories/ratingRepository');
 const menuRepository = require('../../repositories/menuRepository');
-const { findStudentService } = require('../studentServices');
+const { findByIdStudentService } = require('../studentServices');
 const NotFoundError = require('../../utils/errors/notFoundError');
 const InternalServerError = require('../../utils/errors/internalServerError');
 
 class CreateRatingService {
   async handle(menuId, studentId, rating, comments) {
     try {
-      const student = await findStudentService.handle(studentId);
+      const student = await findByIdStudentService.handle(studentId);
 
       if (!student) {
         throw Error('Student not found');
