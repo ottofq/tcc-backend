@@ -38,6 +38,17 @@ class StudentRepository {
     }
   }
 
+  async findByEmailPass(email) {
+    try {
+      const student = await studentModel
+        .findOne({ email })
+        .select('+hash_password');
+      return student;
+    } catch (error) {
+      throw new DBError(error.message);
+    }
+  }
+
   async list(skip, limit) {
     try {
       const students = await studentModel
