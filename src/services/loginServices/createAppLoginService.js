@@ -1,39 +1,35 @@
 const jwt = require('jsonwebtoken');
-const userRepository = require('../../repositories/userRepository');
+const studentRepository = require('../../repositories/studentRepository');
 const passwordUtil = require('../../utils/passwordUtils');
 const ForbiddenError = require('../../utils/errors/forbiddenError');
 const NotFoundError = require('../../utils/errors/notFoundError');
 
-class CreateLoginService {
+class CreateAppLoginService {
   async handle(email, password) {
-    const userExists = await userRepository.findEmail(email);
+    const studentExists = await studentRepository.findByEmailPass(email);
 
-    if (!userExists) {
+    if (!studentExists) {
       throw new NotFoundError('Usuário não existente na base de dados!');
     }
 
     const verifyPassword = await passwordUtil.comparePassword(
       password,
-      userExists.hash_password
+      studentExists.hash_password
     );
 
     if (!verifyPassword) {
       throw new ForbiddenError('Email/password incorreto!');
     }
+    const { _id } = studentExists;
 
-    const { _id, nome } = userExists;
+    const token = jwt.sign({ _id }, process.env.JWT_SECRET, {
+      expiresIn: '7d',
+    });
 
-    return {
-      user: {
-        _id,
-        nome,
-        email,
-      },
-      token: jwt.sign({ _id }, process.env.JWT_SECRET, {
-        expiresIn: '7d',
-      }),
-    };
+    studentExists.hash_password = undefined;
+
+    return { student: studentExists, auth: { token } };
   }
 }
 
-module.exports = new CreateLoginService();
+module.exports = new CreateAppLoginService();

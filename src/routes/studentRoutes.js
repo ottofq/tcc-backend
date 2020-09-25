@@ -7,7 +7,13 @@ const { idValidator } = require('../middlewares/validators');
 const studentRoutes = Router();
 
 studentRoutes.post('/', studentController.create);
+studentRoutes.put('/', studentController.update);
 studentRoutes.get('/', auth, studentController.list);
+studentRoutes.get('/findEmail/:email', studentController.findByEmail);
+studentRoutes.get(
+  '/findMatricula/:matricula',
+  studentController.findByRegistation
+);
 studentRoutes.get('/:id', idValidator, auth, studentController.findOne);
 
 module.exports = studentRoutes;

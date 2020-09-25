@@ -14,6 +14,6 @@ routes.use('/alunos', studentRoutes);
 routes.use('/estatisticas', statisticsRoutes);
 routes.use('/noticias', newsRoutes);
 routes.use('/users', usersRoutes);
-routes.use('/login', loginRoutes);
+routes.use('/', loginRoutes);
 
 module.exports = routes;

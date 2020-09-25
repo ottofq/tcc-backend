@@ -3,14 +3,10 @@ const NotFoundError = require('../../utils/errors/notFoundError');
 const DBError = require('../../utils/errors/dbError');
 const InternalServerError = require('../../utils/errors/internalServerError');
 
-class FindStudentService {
-  async handle(id) {
+class FindByRegistrationStudentService {
+  async handle(registration) {
     try {
-      const student = await studentRespository.findById(id);
-
-      if (!student) {
-        throw Error('Student not found');
-      }
+      const student = await studentRespository.findByRegistration(registration);
 
       return student;
     } catch (error) {
@@ -22,4 +18,4 @@ class FindStudentService {
   }
 }
 
-module.exports = new FindStudentService();
+module.exports = new FindByRegistrationStudentService();

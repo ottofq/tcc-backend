@@ -29,6 +29,26 @@ class StudentRepository {
     }
   }
 
+  async findByEmail(email) {
+    try {
+      const student = await studentModel.findOne({ email });
+      return student;
+    } catch (error) {
+      throw new DBError(error.message);
+    }
+  }
+
+  async findByEmailPass(email) {
+    try {
+      const student = await studentModel
+        .findOne({ email })
+        .select('+hash_password');
+      return student;
+    } catch (error) {
+      throw new DBError(error.message);
+    }
+  }
+
   async list(skip, limit) {
     try {
       const students = await studentModel
@@ -48,6 +68,85 @@ class StudentRepository {
       const total_students = await studentModel.countDocuments();
 
       return total_students;
+    } catch (error) {
+      throw new DBError(error.message);
+    }
+  }
+
+  async update(student) {
+    try {
+      const updatedStudent = await studentModel.updateOne(
+        { _id: student._id },
+        [
+          {
+            $set: {
+              nome: student.nome,
+              data_nascimento: student.data_nascimento,
+              curso: student.curso,
+              ano_ingresso: student.ano_ingresso,
+              sexo: student.sexo,
+              bolsista: student.bolsista,
+              frequencia_RU: student.frequencia_RU,
+              tipo_refeicao_RU: student.tipo_refeicao_RU,
+              nivel_fisico: student.nivel_fisico,
+              peso_ideal: student.peso_ideal,
+              alergias: {
+                alergia_gluten: student.alergias.alergia_gluten,
+                intolerancia_lactose: student.alergias.intolerancia_lactose,
+                proteina_leite_vaca: student.alergias.proteina_leite_vaca,
+                outras_alergias: student.alergias.outras_alergias,
+              },
+              vegano_vegetariano: student.vegano_vegetariano,
+              adiciona_sal: student.adiciona_sal,
+              utiliza_oleo_composto: student.utiliza_oleo_composto,
+              consome_bebida_alcoolica: student.consome_bebida_alcoolica,
+              tabagista: student.tabagista,
+              patologias: {
+                doenca_cardiovascular: student.patologias.doenca_cardiovascular,
+                hipertensao_arterial: student.patologias.hipertensao_arterial,
+                obesidade: student.patologias.obesidade,
+                dislipidemias: student.patologias.dislipidemias,
+                doenca_arterial_coronariana:
+                  student.patologias.doenca_arterial_coronariana,
+                diabetes: student.patologias.diabetes,
+                outras_patologias: student.patologias.outras_patologias,
+              },
+              patologias_familia: {
+                fam_doenca_cardiovascular:
+                  student.patologias_familia.fam_doenca_cardiovascular,
+                fam_hipertensao: student.patologias_familia.fam_hipertensao,
+                fam_obesidade: student.patologias_familia.fam_obesidade,
+                fam_dislipidemias: student.patologias_familia.fam_dislipidemias,
+                fam_doenca_arterial_coronariana:
+                  student.patologias_familia.fam_doenca_arterial_coronariana,
+                fam_diabetes: student.patologias_familia.fam_diabetes,
+                patologias_familia_outras:
+                  student.patologias_familia.patologias_familia_outras,
+              },
+              medicamento_continuo: student.medicamento_continuo,
+              avaliacao_RU: {
+                aroma: student.avaliacao_RU.aroma,
+                coloracao_cardapio: student.avaliacao_RU.coloracao_cardapio,
+                textura_preparacao: student.avaliacao_RU.textura_preparacao,
+                sabor_preparacao: student.avaliacao_RU.sabor_preparacao,
+                avaliacao_geral: student.avaliacao_RU.avaliacao_geral,
+              },
+              melhorias_RU: {
+                cardapio: student.melhorias_RU.cardapio,
+                melhoria_sabor_preparacao:
+                  student.melhorias_RU.melhoria_sabor_preparacao,
+                opcao_vegetariana: student.melhorias_RU.opcao_vegetariana,
+                estrutura_fisica: student.melhorias_RU.estrutura_fisica,
+                tempo_fila: student.melhorias_RU.tempo_fila,
+                preco_ticket: student.melhorias_RU.preco_ticket,
+                melhoria_outros: student.melhorias_RU.melhoria_outros,
+              },
+            },
+          },
+        ]
+      );
+
+      return updatedStudent;
     } catch (error) {
       throw new DBError(error.message);
     }
