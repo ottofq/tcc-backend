@@ -6,7 +6,8 @@ const InternalServerError = require('../../utils/errors/internalServerError');
 class FindEmailStudentService {
   async handle(email) {
     try {
-      const student = await studentRespository.findByEmail(email);
+      const emailHandled = email.trim().toLowerCase();
+      const student = await studentRespository.findByEmail(emailHandled);
 
       return student;
     } catch (error) {

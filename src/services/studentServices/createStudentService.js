@@ -7,7 +7,9 @@ const passwordUtils = require('../../utils/passwordUtils');
 class CreateStudentService {
   async handle(student) {
     try {
-      const emailExists = await studentRespository.findByEmail(student.email);
+      const emailHandled = student.email.trim().toLowerCase();
+
+      const emailExists = await studentRespository.findByEmail(emailHandled);
 
       if (emailExists) {
         throw Error('Já existe um aluno associado a esse email');
@@ -23,7 +25,11 @@ class CreateStudentService {
 
       const hash_password = await passwordUtils.hashPassword(student.password);
 
-      const studentWithPassHashed = { ...student, hash_password };
+      const studentWithPassHashed = {
+        ...student,
+        hash_password,
+        email: emailHandled,
+      };
       delete studentWithPassHashed.password;
 
       const studentCreated = await studentRespository.create(
