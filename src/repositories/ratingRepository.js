@@ -21,7 +21,8 @@ class RatingRepository {
               $position: 0,
             },
           },
-        }
+        },
+        { upsert: true }
       );
 
       return result;
