@@ -23,7 +23,7 @@ const studentSchema = new Schema(
 const ratingSchema = new Schema({
   cardapio_id: {
     type: Types.ObjectId,
-    ref: 'Cardapio',
+    ref: 'menu',
     required: true,
   },
   avaliacoes: {
