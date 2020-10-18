@@ -1,7 +1,7 @@
 const {
   createStudentService,
   listStudentsService,
-  findStudentService,
+  findByIdStudentService,
   findByRegistrationStudentService,
   findEmailStudentService,
   updateStudentService,
@@ -163,7 +163,7 @@ class StudentController {
     const { id } = req.params;
 
     try {
-      const result = await findStudentService.handle(id);
+      const result = await findByIdStudentService.handle(id);
       return res.status(200).json(result);
     } catch (error) {
       return res.status(error.statusCode).json({ error: error.message });
