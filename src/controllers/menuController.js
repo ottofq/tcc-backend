@@ -7,6 +7,8 @@ const {
   findMenuService,
 } = require('../services/menuServices');
 
+const { createRatingColletionService } = require('../services/ratingServices');
+
 class MenuController {
   async create(req, res) {
     const data = Date.now();
@@ -33,6 +35,7 @@ class MenuController {
 
     try {
       const menuCreated = await createMenuService.handle(menu);
+      await createRatingColletionService.handle(menuCreated._id);
       return res.status(200).json(menuCreated);
     } catch (error) {
       return res.status(error.statusCode).json({ error: error.message });
