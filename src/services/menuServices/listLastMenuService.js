@@ -7,7 +7,7 @@ class ListLastMenuService {
     try {
       const menuCache = await cache.get('lastMenu');
 
-      if (!menuCache) {
+      if (menuCache === null || menuCache === 'null') {
         const menuDB = await menuRepository.listLastMenu();
         await cache.save('lastMenu', 28800, JSON.stringify(menuDB));
         return menuDB;
