@@ -1,6 +1,5 @@
 require('dotenv').config();
 require('./database/mongo');
-require('./database/redis');
 require('express-async-errors');
 const { errors } = require('celebrate');
 
