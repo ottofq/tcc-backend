@@ -17,7 +17,7 @@
     "ioredis": "^4.14.1",
     "joi-objectid": "^3.0.1",
     "jsonwebtoken": "^8.5.1",
-    "mongoose": "^5.8.7"
+    "mongoose": "^5.13.15"
   },
   "devDependencies": {
     "eslint": "^6.8.0",
