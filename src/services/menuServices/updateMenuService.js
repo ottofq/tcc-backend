@@ -12,7 +12,6 @@ class UpdateMenuService {
       }
       const menuUpdated = await menuRepository.updateMenu(id, menu);
 
-      // await cache.del(`cardapio:${id}`);
 
       return menuUpdated;
     } catch (error) {
